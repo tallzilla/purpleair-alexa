@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 # This is a simple Hello World Alexa Skill, built using
-# the implementation of handler classes approach in skill builder.
+# the implementation of handler classes approach in skill builder
 
 import logging
+import get_aqi
 
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
@@ -19,16 +20,27 @@ sb = SkillBuilder()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return is_request_type("LaunchRequest")(handler_input)
 
+
+    #TODO - probably should pass off launch handle to AQI intent if that's possible
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speech_text = "Welcome to the Alexa Skills Kit, you can say hello!"
+
+        try:
+            aqi = get_aqi.main()
+        except Exception as e:
+            speech_text = "Sorry, there was a problem getting your AQI. Please try again."
+        else:
+            speech_text = "Hey sexy, your AQI is " + str(aqi)
+        finally:
+            pass
+
+        #speech_text = "Welcome to my local air sensor! You can ask what the air quality is."
 
         handler_input.response_builder.speak(speech_text).set_card(
             SimpleCard("Hello World", speech_text)).set_should_end_session(
@@ -36,18 +48,26 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 
 
-class HelloWorldIntentHandler(AbstractRequestHandler):
+class AQIIntentHandler(AbstractRequestHandler):
     """Handler for Hello World Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("HelloWorldIntent")(handler_input)
+        return is_intent_name("AQIIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speech_text = "Hello Python World from Classes!"
 
+        try:
+            aqi = get_aqi.main()
+        except Exception as e:
+            speech_text = "Sorry, there was a problem getting your AQI. Please try again."
+        else:
+            speech_text = "Hey sexy, your AQI is " + str(aqi)
+        finally:
+            pass
+    
         handler_input.response_builder.speak(speech_text).set_card(
-            SimpleCard("Hello World", speech_text)).set_should_end_session(
+            SimpleCard("Your AQI", speech_text)).set_should_end_session(
             True)
         return handler_input.response_builder.response
 
@@ -60,7 +80,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speech_text = "You can say hello to me!"
+        speech_text = "You can ask me what the AQI is!"
 
         handler_input.response_builder.speak(speech_text).ask(
             speech_text).set_card(SimpleCard(
@@ -96,9 +116,9 @@ class FallbackIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         speech_text = (
-            "The Hello World skill can't help you with that.  "
-            "You can say hello!!")
-        reprompt = "You can say hello!!"
+            "This skill can't help you with that.  "
+            "You can ask about the air quality!!")
+        reprompt = "You can ask about the AQI!!"
         handler_input.response_builder.speak(speech_text).ask(reprompt)
         return handler_input.response_builder.response
 
@@ -133,7 +153,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
 
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(HelloWorldIntentHandler())
+sb.add_request_handler(AQIIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())
