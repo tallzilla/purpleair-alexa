@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# This is a simple Hello World Alexa Skill, built using
+# This is a simple Nearest Air Sensor Alexa Skill, built using
 # the implementation of handler classes approach in skill builder
 
 import logging
@@ -52,37 +52,51 @@ class LaunchRequestHandler(AbstractRequestHandler):
         elif geolocation_access:
             lat = input['context']['geolocation']['coordinate']['latitude_in_degrees']
             lng = input['context']['geolocation']['coordinate']['longitude_in_degrees']
+            coordinate = {lat: lat, lng: lng}
             # preference is to act on geolocation data
             pass
         else:
             response = get_address(device_id, consent_token)
             coordinate = get_coordinate_from_address_response(response)
 
-            import pprint, pdb; pdb.set_trace()
-
             # act on address_access
             pass
 
+        readings = get_aqi.get_closest_device_readings(coordinate)
+
 
         try:
-            aqi = get_aqi.main()
-        except Exception as e:
+            aqi = readings['aqi']
+        except KeyError as e:
             speech_text = "Sorry, there was a problem getting your AQI. Please try again."
         else:
-            speech_text = "Jeff Bezos can eat a D. I did this from my computer. Hey sexy, your AQI is " + str(aqi)
-        finally:
-            pass
+
+            #convert the device id into a readable string
+            device_id_string = " ".join(str(readings['device_id']))
+
+            #human-readable distance
+
+            if readings['miles_away'] < 1:
+                distance_string = "{} feet away".format(int(5280 * readings['miles_away']))
+            else:
+                distance_string = "{} miles away".format(int(reading['miles_away']))
+
+            speech_text = "Your AQI is {}, your PurpleAir device i.d. is {}" \
+                "and I think it's about {}".format(
+                    readings['aqi'],
+                    device_id_string,
+                    distance_string)
 
         #speech_text = "Welcome to my local air sensor! You can ask what the air quality is."
 
         handler_input.response_builder.speak(speech_text).set_card(
-            SimpleCard("Hello World", speech_text)).set_should_end_session(
-            False)
+            SimpleCard("Nearest Air Sensor", speech_text)).set_should_end_session(
+            True)
         return handler_input.response_builder.response
 
 
 class AQIIntentHandler(AbstractRequestHandler):
-    """Handler for Hello World Intent."""
+    """Handler for Nearest Air Sensor Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return is_intent_name("AQIIntent")(handler_input)
@@ -117,7 +131,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
         handler_input.response_builder.speak(speech_text).ask(
             speech_text).set_card(SimpleCard(
-                "Hello World", speech_text))
+                "Nearest Air Sensor", speech_text))
         return handler_input.response_builder.response
 
 
@@ -133,7 +147,7 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
         speech_text = "Goodbye!"
 
         handler_input.response_builder.speak(speech_text).set_card(
-            SimpleCard("Hello World", speech_text))
+            SimpleCard("Nearest Air Sensor", speech_text))
         return handler_input.response_builder.response
 
 

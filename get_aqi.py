@@ -4,8 +4,85 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from math import floor
 from statistics import mean
+from geopy.distance import great_circle
 
-def main():
+#given aa lng, lat coordinate, return the device_id of the closest sensor
+def get_closest_device_readings(user_coordinate):
+    url = 'https://www.purpleair.com/json'
+
+    retry_strategy = Retry(
+        total=5,
+        backoff_factor=10,
+        status_forcelist=[302, 429, 500, 502, 503, 504],
+        method_whitelist=["HEAD", "GET", "OPTIONS"]
+    )
+
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    http.mount("http://", adapter)
+
+    try:
+        print("Getting the full list of sensors, will take a minute...")
+        response = http.get(url, allow_redirects=False)
+    except Exception as e:
+        print("Retry Exception, need to handle")
+        raise
+    else:
+        print("Response received from json endpoint.")
+
+    try:
+        response_json = response.json()
+    except Exception as e:
+        print("Response isn't valid json")
+        raise
+    else:
+        print("Response is valid json")
+
+    shortest_distance = None
+    shortest_device_id = None
+    shortest_pm_2_5_atm = None
+
+    for sensor in response_json['results']:
+        try:
+            sensor_coordinate = {'lat': sensor['Lat'], 'lng': sensor['Lon']}
+        except KeyError:
+            # there's no long/lat on this sensor, pass it
+            continue
+        except:
+            import pprint, pdb; pdb.set_trace()
+
+        distance = great_circle((user_coordinate['lat'],
+            user_coordinate['lng']),
+            (sensor_coordinate['lat'],
+            sensor_coordinate['lng'])).miles
+
+        try:
+            if shortest_distance is None or shortest_distance > distance:
+                shortest_distance = distance
+                shortest_device_id = sensor['ID']
+                shortest_pm_2_5_atm = pm_2_5_to_aqi(sensor['PM2_5Value'])
+
+                # try:
+                #     pm_2_5_atm = mean([
+                #         float(response_json['results'][0]['pm2_5_atm']),
+                #         float(response_json['results'][1]['pm2_5_atm'])])
+
+                # except Exception as e:
+                #     print("Problem getting pm_2_5_atm")
+                #     raise
+
+        except:
+            import pprint, pdb; pdb.set_trace()
+
+    print("Shortest device id is {} and distance is {} miles".format(shortest_device_id, shortest_distance))
+
+    return {'device_id': shortest_device_id, 
+        'miles_away': shortest_distance,
+         'aqi': shortest_pm_2_5_atm}
+
+
+def get_hardcoded_aqi():
     device_id = 66407
     url = 'https://www.purpleair.com/json?show=' + str(device_id)
 
@@ -29,7 +106,7 @@ def main():
         print("Retry Exception, need to handle")
         raise
     else:
-        print("Response received.")
+        print("Response received from json/show endpoint.")
 
     try:
         response_json = response.json()
@@ -43,7 +120,7 @@ def main():
 
     # get the pm2_5_atm 
     try:
-        pm_2_5_atm = mean([\
+        pm_2_5_atm = mean([
             float(response_json['results'][0]['pm2_5_atm']),
             float(response_json['results'][1]['pm2_5_atm'])])
 

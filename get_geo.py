@@ -34,7 +34,7 @@ def get_address(device_id, consent_token):
         print("Retry Exception, need to handle")
         raise
     else:
-        print("Response received.")
+        print("Response received from alexa's address lookup.")
 
     try:
         response_json = response.json()
@@ -119,7 +119,7 @@ def get_coordinate_from_address_response(alexa_address_response):
         print("Retry Exception, need to handle")
         raise
     else:
-        print("Response received.")
+        print("Response received from google coordinate lookup.")
 
     try:
         response_json = response.json()
