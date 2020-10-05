@@ -37,7 +37,7 @@ def main():
         print("Response isn't valid json")
         raise
     else:
-        print("Reponse is valid json")
+        print("Response is valid json")
 
     #import pdb; pdb.set_trace()
 

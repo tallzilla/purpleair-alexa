@@ -1,4 +1,7 @@
-# Any archive file in the roor dir
+#Any env file
+.env
+
+# Any archive file
 *.zip
 
 # Byte-compiled / optimized / DLL files

@@ -5,6 +5,8 @@
 
 import logging
 import get_aqi
+from get_geo import get_address, get_coordinate_from_address_response
+import requests
 
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
@@ -31,12 +33,43 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
 
+        request = handler_input.request_envelope.to_dict()
+
+        #TODO: will need for storage
+        user_id = request['context']['system']['user']['user_id']
+
+
+        # get data necessary for address access
+        device_id = request['context']['system']['device']['device_id']
+        consent_token = request['context']['system']['user']['permissions']['consent_token']
+
+        address_access = ( request['context']['system']['user']['permissions']['consent_token'] != None )
+        geolocation_access = (request['context']['geolocation'] != None)
+
+        if not address_access and not geolocation_access:
+            #TODO: If the user doesn't have any geo-ish permissions do something
+            pass
+        elif geolocation_access:
+            lat = input['context']['geolocation']['coordinate']['latitude_in_degrees']
+            lng = input['context']['geolocation']['coordinate']['longitude_in_degrees']
+            # preference is to act on geolocation data
+            pass
+        else:
+            response = get_address(device_id, consent_token)
+            coordinate = get_coordinate_from_address_response(response)
+
+            import pprint, pdb; pdb.set_trace()
+
+            # act on address_access
+            pass
+
+
         try:
             aqi = get_aqi.main()
         except Exception as e:
             speech_text = "Sorry, there was a problem getting your AQI. Please try again."
         else:
-            speech_text = "Hey sexy, your AQI is " + str(aqi)
+            speech_text = "Jeff Bezos can eat a D. I did this from my computer. Hey sexy, your AQI is " + str(aqi)
         finally:
             pass
 
@@ -62,7 +95,7 @@ class AQIIntentHandler(AbstractRequestHandler):
         except Exception as e:
             speech_text = "Sorry, there was a problem getting your AQI. Please try again."
         else:
-            speech_text = "Hey sexy, your AQI is " + str(aqi)
+            speech_text = "Jeff Bezos can eat a D. I did this from my computer. Hey sexy, your AQI is " + str(aqi)
         finally:
             pass
     
