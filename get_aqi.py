@@ -1,5 +1,5 @@
 import requests
-
+import json
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from math import floor
@@ -8,36 +8,38 @@ from geopy.distance import great_circle
 
 #given aa lng, lat coordinate, return the device_id of the closest sensor
 def get_closest_device_readings(user_coordinate):
-    url = 'https://www.purpleair.com/json'
 
-    retry_strategy = Retry(
-        total=5,
-        backoff_factor=10,
-        status_forcelist=[302, 429, 500, 502, 503, 504],
-        method_whitelist=["HEAD", "GET", "OPTIONS"]
-    )
+    #TODO: Turn back on when you have a better full device list solution
+    # url = 'https://www.purpleair.com/json'
 
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
-    http.mount("http://", adapter)
+    # retry_strategy = Retry(
+    #     total=0,
+    #     backoff_factor=20,
+    #     status_forcelist=[302, 429, 500, 502, 503, 504],
+    #     method_whitelist=["HEAD", "GET", "OPTIONS"]
+    # )
 
-    try:
-        print("Getting the full list of sensors, will take a minute...")
-        response = http.get(url, allow_redirects=False)
-    except Exception as e:
-        print("Retry Exception, need to handle")
-        raise
-    else:
-        print("Response received from json endpoint.")
+    # adapter = HTTPAdapter(max_retries=retry_strategy)
+    # http = requests.Session()
+    # http.mount("https://", adapter)
+    # http.mount("http://", adapter)
 
-    try:
-        response_json = response.json()
-    except Exception as e:
-        print("Response isn't valid json")
-        raise
-    else:
-        print("Response is valid json")
+    # #this service is flaky... so as a fallback I have cached a copy
+    # #of the response json
+    # try:
+    #     print("Getting the full list of sensors, will take a minute...")
+    #     response = http.get(url, allow_redirects=False)
+    #     response_json = response.json()
+    #     print("Response received from json endpoint.")
+
+    # except Exception as e:
+    #     print("Retry Exception, falling back to hardcoded json")
+    #     #TODO: Fall back to a hardcoded json file if this fails out
+
+    with open('purpleair.json', 'r', encoding="utf8") as file:
+        data=file.read()
+
+    response_json = json.loads(data)
 
     shortest_distance = None
     shortest_device_id = None
@@ -49,8 +51,6 @@ def get_closest_device_readings(user_coordinate):
         except KeyError:
             # there's no long/lat on this sensor, pass it
             continue
-        except:
-            import pprint, pdb; pdb.set_trace()
 
         distance = great_circle((user_coordinate['lat'],
             user_coordinate['lng']),
@@ -62,15 +62,6 @@ def get_closest_device_readings(user_coordinate):
                 shortest_distance = distance
                 shortest_device_id = sensor['ID']
                 shortest_pm_2_5_atm = pm_2_5_to_aqi(sensor['PM2_5Value'])
-
-                # try:
-                #     pm_2_5_atm = mean([
-                #         float(response_json['results'][0]['pm2_5_atm']),
-                #         float(response_json['results'][1]['pm2_5_atm'])])
-
-                # except Exception as e:
-                #     print("Problem getting pm_2_5_atm")
-                #     raise
 
         except:
             import pprint, pdb; pdb.set_trace()

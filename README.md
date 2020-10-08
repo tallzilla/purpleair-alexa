@@ -2,7 +2,7 @@
  Alexa skill to read out a purpleair sensor
 
 Some useful incantations:
-Compress-Archive -Path .\*.py, .\env\Lib\site-packages\* -DestinationPath purpleair-alexa.zip
+Compress-Archive -Force -Path .env, *.py, .\env\Lib\site-packages\* -DestinationPath purpleair-alexa.zip
 
 
 Was following these instructions:

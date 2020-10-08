@@ -1,5 +1,6 @@
 import requests
 import os
+import json
 from urllib.parse import quote_plus
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -48,41 +49,45 @@ def get_address(device_id, consent_token):
 
 
 def url_encode_address_response(alexa_address_response):
+
+    print(alexa_address_response)
+
+
     encoded_address = ""
 
-    if alexa_address_response['addressLine1'] is not None:
-       encoded_address += quote_plus(alexa_address_response['addressLine1'])
+    if alexa_address_response.address_line1 is not None:
+       encoded_address += quote_plus(alexa_address_response.address_line1)
 
-    if alexa_address_response['addressLine2'] is not None:
-       encoded_address += quote_plus(alexa_address_response['addressLine2'])
+    if alexa_address_response.address_line2 is not None:
+       encoded_address += quote_plus(alexa_address_response.address_line2)
 
-    if alexa_address_response['addressLine3'] is not None:
-       encoded_address += quote_plus(alexa_address_response['addressLine3'])
-
-    encoded_address += ","
-
-    if alexa_address_response['city'] is not None:
-       encoded_address += quote_plus(alexa_address_response['city'])
+    if alexa_address_response.address_line3 is not None:
+       encoded_address += quote_plus(alexa_address_response.address_line3)
 
     encoded_address += ","
 
-    if alexa_address_response['stateOrRegion'] is not None:
-       encoded_address += quote_plus(alexa_address_response['stateOrRegion'])
+    if alexa_address_response.city is not None:
+       encoded_address += quote_plus(alexa_address_response.city)
 
     encoded_address += ","
 
-    if alexa_address_response['districtOrCounty'] is not None:
-       encoded_address += quote_plus(alexa_address_response['districtOrCounty'])
+    if alexa_address_response.state_or_region is not None:
+       encoded_address += quote_plus(alexa_address_response.state_or_region)
 
     encoded_address += ","
 
-    if alexa_address_response['countryCode'] is not None:
-       encoded_address += quote_plus(alexa_address_response['countryCode'])
+    if alexa_address_response.district_or_county is not None:
+       encoded_address += quote_plus(alexa_address_response.district_or_county)
 
     encoded_address += ","
 
-    if alexa_address_response['postalCode'] is not None:
-       encoded_address += quote_plus(alexa_address_response['postalCode'])
+    if alexa_address_response.country_code is not None:
+       encoded_address += quote_plus(alexa_address_response.country_code)
+
+    encoded_address += ","
+
+    if alexa_address_response.postal_code is not None:
+       encoded_address += quote_plus(alexa_address_response.postal_code)
 
     return encoded_address
 

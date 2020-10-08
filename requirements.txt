@@ -4,3 +4,5 @@ ask_sdk_model
 ask_sdk_local_debug
 python-dotenv
 geopy
+pytest
+python-lambda-local
