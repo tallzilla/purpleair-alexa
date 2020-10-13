@@ -8,7 +8,7 @@ MAPS_API_KEY=<your Google Maps api key>
 ```
 
 ##Some useful incantations:
-1. Pack everything up for lambda upload:
+1. Pack everything up for lambda upload (windows):
 ```
 Compress-Archive -Force -Path .env, *.py, *.json, .\env\Lib\site-packages\* -DestinationPath purpleair-alexa.zip
 ```
