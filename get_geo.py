@@ -122,17 +122,18 @@ def get_coordinate_from_address_response(alexa_address_response):
         response = http.get(api_uri)
     except Exception as e:
         print("Retry Exception, need to handle")
-        raise
+        return None
     else:
         print("Response received from google coordinate lookup.")
 
     try:
         response_json = response.json()
-        coordinate = response_json['results'][0]['geometry']['location']
+        coordinate_google = response_json['results'][0]['geometry']['location']
     except Exception as e:
         print("Response isn't valid json or the coordinate was somehow invalid.")
-        raise
+        return None
     else:
-        return coordinate
         print("Response is valid json")
+        return {'latitude_in_degrees': coordinate_google['lat'], \
+            'longitude_in_degrees': coordinate_google['lng'] }
 

@@ -73,8 +73,11 @@ def get_closest_device_readings(user_coordinate):
          'aqi': shortest_pm_2_5_atm}
 
 
-def get_hardcoded_aqi():
-    device_id = 66407
+def get_hardcoded_aqi(device_id):
+
+    if device_id is None: #default
+        device_id = 66407
+
     url = 'https://www.purpleair.com/json?show=' + str(device_id)
 
     #response = requests.get('https://api.github.com/user', auth=('user', 'pass'))
@@ -111,9 +114,16 @@ def get_hardcoded_aqi():
 
     # get the pm2_5_atm 
     try:
-        pm_2_5_atm = mean([
-            float(response_json['results'][0]['pm2_5_atm']),
-            float(response_json['results'][1]['pm2_5_atm'])])
+        print(response_json['results'])
+
+        try:
+            response_json['results'][1]['pm2_5_atm'] == True
+        except KeyError:
+            pm_2_5_atm = response_json['results'][0]['pm2_5_atm']
+        else:
+            pm_2_5_atm = mean([
+                float(response_json['results'][0]['pm2_5_atm']),
+                float(response_json['results'][1]['pm2_5_atm'])])
 
     except Exception as e:
         print("Problem getting pm_2_5_atm")
