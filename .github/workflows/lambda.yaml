@@ -1,10 +1,7 @@
 name: deploy to lambda
 on:
   schedule:
-    - cron:  '0 * * * *'
-  push:
-    branches:
-      - main
+    - cron:  '*/5 * * * *'
 jobs:
   deploy_zip:
     name: deploy lambda function
