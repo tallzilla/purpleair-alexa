@@ -23,9 +23,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Create envfile
+        run: |
+          echo 'MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}' > ./.env 
       - name: Build zip
         run: |
-          zip deployment .env *.py *.json .\env\lib\site-packages\*
+          zip deployment .env *.py *.json ./env/lib/site-packages/*
       - name: default deploy
         uses: appleboy/lambda-action@master
         with:
