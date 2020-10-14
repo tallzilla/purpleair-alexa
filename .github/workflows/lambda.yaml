@@ -28,7 +28,7 @@ jobs:
           echo 'MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}' > ./.env 
       - name: Build zip
         run: |
-          zip deployment .env *.py *.json ./env/lib/site-packages/*
+          zip -r deployment .env *.py *.json ./env/lib/site-packages
       - name: default deploy
         uses: appleboy/lambda-action@master
         with:
