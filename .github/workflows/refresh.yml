@@ -6,7 +6,7 @@ name: periodically refresh with purpleair data
 # events but only for the main branch
 on:
   schedule:
-    - cron:  '*/2 * * * *'
+    - cron:  '*/5 * * * *'
 
 jobs:
   deploy_zip:
