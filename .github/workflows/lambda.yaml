@@ -1,7 +1,7 @@
-name: deploy to lambda on push
+name: deploy to lambda
 on:
   schedule:
-    - cron:  '*/5 * * * *'
+    - cron:  '0 * * * *'
   push:
     branches:
       - main
