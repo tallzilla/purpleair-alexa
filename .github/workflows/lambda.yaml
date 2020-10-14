@@ -27,8 +27,7 @@ jobs:
         run: |
           echo 'MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}' > ./.env 
       - name: Fetch latest json
-    steps:
-      - name: curl
+      - name: curl purpleair
         uses: wei/curl@master
         with:
           args: https://www.purpleair.com/json -o purpleair.json
