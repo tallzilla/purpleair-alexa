@@ -1,6 +1,6 @@
 name: deploy to lambda
 on:
-  schedules:
+  schedule:
     - cron:  '* * * * *'
   push:
     branches:
