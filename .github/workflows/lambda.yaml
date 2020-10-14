@@ -32,7 +32,7 @@ jobs:
           args: https://www.purpleair.com/json -o purpleair.json
       - name: Build zip
         run: |
-          cd env/lib/site-packages && zip -r ../deployment.zip ../.env ../*.py ../*.json *
+          cd site-packages && zip -r ../deployment.zip ../.env ../*.py ../*.json *
       - name: Push zip to lambda
         uses: appleboy/lambda-action@master
         with:
