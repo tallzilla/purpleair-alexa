@@ -185,12 +185,12 @@ class LaunchRequestHandler(AbstractRequestHandler):
         application_id = handler_input.request_envelope.session.application.application_id
         print(application_id)
 
-        #if application_id in SKILL_IDS['NEAREST_SENSOR']:
-        return nearest_air_sensor_handler(handler_input)
-        #elif application_id in SKILL_IDS['HELLA_HOT']:
-        #    return hella_hot_handler(handler_input)
-        #else:
-        #    raise
+        if application_id in SKILL_IDS['NEAREST_SENSOR']:
+            return nearest_air_sensor_handler(handler_input)
+        elif application_id in SKILL_IDS['HELLA_HOT']:
+            return hella_hot_handler(handler_input)
+        else:
+            raise
 
 
 class AQIIntentHandler(AbstractRequestHandler):
