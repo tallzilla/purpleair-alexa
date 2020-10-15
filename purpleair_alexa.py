@@ -42,11 +42,20 @@ SUCCESS_SPEECH = (
     'Your AQI is {} <break time= "0.25s"/> at {}. <break time= "0.25s"/> The nearest PurpleAir device i.d. is {}'
     "and I think it's about {}."
 )
+
+HELLA_HOT_SPEECH = (
+    "Hi! It's hella hot.")
+
 NOTIFY_BAD_ADDRESS_TITLE = "Unsupported Address"
 NOTIFY_BAD_ADDRESS = "Sorry, this skill is having trouble supporting your address."
 ADDRESS_PERMISSIONS = ["read::alexa:device:all:address"]
 GEOLOCATION_PERMISSIONS = ["read::alexa:device:all:geolocation"]
 
+SKILL_IDS = {
+    "HELLA_HOT": ["amzn1.ask.skill.bed75595-ff55-44cb-855f-e25943965996"],
+    "NEAREST_SENSOR": ["amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b5",
+        "amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50"]
+}
 
 def get_aqi_string(aqi):
     #returns string representing AQI
@@ -155,6 +164,14 @@ def nearest_air_sensor_handler(handler_input):
         )
         return response_builder.response
 
+def hella_hot_handler(handler_input):
+    request_envelope = handler_input.request_envelope
+    response_builder = handler_input.response_builder 
+       
+    response_builder.speak(HELLA_HOT_SPEECH).set_card(
+        SimpleCard("Nearest Air Sensor", HELLA_HOT_SPEECH).set_should_end_session(True)
+    )
+    return response_builder.response
 
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
@@ -164,7 +181,16 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-        return nearest_air_sensor_handler(handler_input)
+
+        application_id = handler_input.request_envelope.session.application.application_id
+        print(application_id == SKILL_IDS['NEAREST_SENSOR'])
+
+        if application_id in SKILL_IDS['NEAREST_SENSOR']:
+            return nearest_air_sensor_handler(handler_input)
+        elif application_id in SKILL_IDS['HELLA_HOT']:
+            return hella_hot_handler(handler_input)
+        else:
+            raise
 
 
 class AQIIntentHandler(AbstractRequestHandler):
