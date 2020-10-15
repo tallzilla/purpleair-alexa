@@ -167,7 +167,7 @@ def nearest_air_sensor_handler(handler_input):
 def hella_hot_handler(handler_input):
     request_envelope = handler_input.request_envelope
     response_builder = handler_input.response_builder 
-       
+
     response_builder.speak(HELLA_HOT_SPEECH).set_card(
         SimpleCard("Nearest Air Sensor", HELLA_HOT_SPEECH).set_should_end_session(True)
     )
@@ -183,8 +183,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
 
         application_id = handler_input.request_envelope.session.application.application_id
-        print(application_id == SKILL_IDS['NEAREST_SENSOR'])
-
+        
         if application_id in SKILL_IDS['NEAREST_SENSOR']:
             return nearest_air_sensor_handler(handler_input)
         elif application_id in SKILL_IDS['HELLA_HOT']:
