@@ -169,7 +169,7 @@ def hella_hot_handler(handler_input):
     temperature = random.randint(-50,150)
     humidity = random.randint(0,100)
     aqi = random.randint(0,500)
-    possible_alerts = [{name:'Heat Advisory'}, {name:'Flash Floods'}]
+    possible_alerts = [{'name':'Heat Advisory'}, {'name':'Flash Floods'}]
     alert_probability = random.random()
     alert_threshold = 0.10
 
