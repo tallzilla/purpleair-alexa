@@ -38,10 +38,10 @@ NOTIFY_MISSING_LOCATION_PERMISSIONS = ("Please enable Location permissions in "
                               "the Amazon Alexa app.")
 
 SUCCESS_TITLE = "Your AQI"
-SUCCESS_CARD = "Your AQI is {}. The nearest PurpleAir device ID is {}. " \
+SUCCESS_CARD = "Your AQI is {} at {}. The nearest PurpleAir device ID is {}. " \
     "I think it's about {}."
 
-SUCCESS_SPEECH = "Your AQI is {}. <break time= \"0.5s\"/> The nearest PurpleAir device i.d. is {}" \
+SUCCESS_SPEECH = "Your AQI is {} at {}. <break time= \"0.5s\"/> The nearest PurpleAir device i.d. is {}" \
     "and I think it's about {}."
 
 NOTIFY_BAD_ADDRESS_TITLE = "Unsupported Address"
@@ -49,6 +49,22 @@ NOTIFY_BAD_ADDRESS = "Sorry, this skill is having trouble supporting your addres
 
 address_permissions = ["read::alexa:device:all:address"]
 geolocation_permissions = ["read::alexa:device:all:geolocation"]
+
+def get_aqi_string(aqi):
+    '''returns string representing AQI '''
+    if aqi < 50:
+        return "Good"
+    elif aqi < 100:
+        return "Moderate"
+    elif aqi < 150:
+        return "Unhealthy for Sensitive Groups"
+    elif aqi < 200:
+        return "Unhealthy"
+    elif aqi < 300:
+        return "Very Unealthy"
+    else:
+        return "Hazardous"
+
 
 
 def build_response_for_coordinate(response_builder, coordinate):
@@ -69,10 +85,12 @@ def build_response_for_coordinate(response_builder, coordinate):
     aqi = get_aqi.get_hardcoded_aqi(readings['device_id'])
 
     card_body = SUCCESS_CARD.format(
+        get_aqi_string(aqi),
         aqi,
         readings['device_id'],
         distance_string)
     speech = SUCCESS_SPEECH.format(
+        get_aqi_string(aqi),
         aqi,
         readings['device_id'],
         distance_string)
@@ -198,20 +216,6 @@ class AQIIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         return nearest_air_sensor(handler_input)
-        # try:
-        #     aqi = get_aqi.get_hardcoded_aqi()
-        # except Exception as e:
-        #     speech_text = "Sorry, there was a problem getting your AQI. Please try again."
-        # else:
-        #     speech_text = "The air quality in Berkeley, California is " + str(aqi)
-        # finally:
-        #     pass
-    
-        # handler_input.response_builder.speak(speech_text).set_card(
-        #     SimpleCard("Your AQI", speech_text)).set_should_end_session(
-        #     True)
-        # return handler_input.response_builder.response
-
 
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""

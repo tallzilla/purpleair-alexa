@@ -1,6 +1,9 @@
 #Any env file
 .env
 
+#any json
+*.json
+
 # Any archive file
 *.zip
 

@@ -9,33 +9,6 @@ from geopy.distance import great_circle
 #given aa lng, lat coordinate, return the device_id of the closest sensor
 def get_closest_device_readings(user_coordinate):
 
-    #TODO: Turn back on when you have a better full device list solution
-    # url = 'https://www.purpleair.com/json'
-
-    # retry_strategy = Retry(
-    #     total=0,
-    #     backoff_factor=20,
-    #     status_forcelist=[302, 429, 500, 502, 503, 504],
-    #     method_whitelist=["HEAD", "GET", "OPTIONS"]
-    # )
-
-    # adapter = HTTPAdapter(max_retries=retry_strategy)
-    # http = requests.Session()
-    # http.mount("https://", adapter)
-    # http.mount("http://", adapter)
-
-    # #this service is flaky... so as a fallback I have cached a copy
-    # #of the response json
-    # try:
-    #     print("Getting the full list of sensors, will take a minute...")
-    #     response = http.get(url, allow_redirects=False)
-    #     response_json = response.json()
-    #     print("Response received from json endpoint.")
-
-    # except Exception as e:
-    #     print("Retry Exception, falling back to hardcoded json")
-    #     #TODO: Fall back to a hardcoded json file if this fails out
-
     with open('purpleair.json', 'r', encoding="utf8") as file:
         data=file.read()
 
