@@ -165,11 +165,37 @@ def nearest_air_sensor_handler(handler_input):
         return response_builder.response
 
 def hella_hot_handler(handler_input):
+    import random
+    temperature = random.randint(-50,150)
+    humidity = random.randint(0,100)
+    aqi = random.randint(0,500)
+    possible_alerts = [{name:'Heat Advisory'}, {name:'Flash Floods'}]
+    alert_probability = random.random()
+    alert_threshold = 0.10
+
+    if temperature < 32:
+        temperature_speech = "It's hella freezing."
+    elif temperature < 40:
+        temperature_speech = "It's hella cold."
+    elif temperature < 50:
+        temperature_speech = "It's hella chilly."
+    elif temperature < 60:
+        temperature_speech = "It's hella moderate."
+    elif temperature < 80:
+        temperature_speech = "It's hella warm."
+    elif temperature < 90:
+        temperature_speech = "It's hella hot."
+    elif temperature < 100:
+        temperature_speech = "It's hella burning."
+
+    temperature_speech += "It'll be {} degrees today.".format(temperature)
+
+
     request_envelope = handler_input.request_envelope
     response_builder = handler_input.response_builder 
 
-    response_builder.speak(HELLA_HOT_SPEECH).set_card(
-        SimpleCard("Nearest Air Sensor", HELLA_HOT_SPEECH)
+    response_builder.speak(temperature_speech).set_card(
+        SimpleCard("Nearest Air Sensor", temperature_speech)
     )
     return response_builder.response
 
