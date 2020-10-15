@@ -137,7 +137,7 @@ def test_loc_supported_no_loc_access_no_address_access():
         print(e)
         assert False
 
-    if response["card"]["permissions"] == pa.geolocation_permissions:
+    if response["card"]["permissions"] == pa.GEOLOCATION_PERMISSIONS:
         assert True
     else:
         assert False
@@ -185,7 +185,7 @@ def test_loc_unsupported_no_address_access():
         print(e)
         assert False
 
-    if response["card"]["permissions"] == pa.address_permissions:
+    if response["card"]["permissions"] == pa.ADDRESS_PERMISSIONS:
         assert True
     else:
         assert False
