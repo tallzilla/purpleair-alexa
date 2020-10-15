@@ -41,7 +41,7 @@ SUCCESS_TITLE = "Your AQI"
 SUCCESS_CARD = "Your AQI is {} at {}. The nearest PurpleAir device ID is {}. " \
     "I think it's about {}."
 
-SUCCESS_SPEECH = "Your AQI is {} at {}. <break time= \"0.5s\"/> The nearest PurpleAir device i.d. is {}" \
+SUCCESS_SPEECH = "Your AQI is {} <break time= \"0.25s\"/> at {}. <break time= \"0.25s\"/> The nearest PurpleAir device i.d. is {}" \
     "and I think it's about {}."
 
 NOTIFY_BAD_ADDRESS_TITLE = "Unsupported Address"
