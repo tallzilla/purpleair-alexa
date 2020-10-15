@@ -6,11 +6,12 @@ from math import floor
 from statistics import mean
 from geopy.distance import great_circle
 
-#given aa lng, lat coordinate, return the device_id of the closest sensor
-def get_closest_device_readings(user_coordinate):
 
-    with open('purpleair.json', 'r', encoding="utf8") as file:
-        data=file.read()
+def get_closest_device_readings(user_coordinate):
+# given a lng, lat coordinate, return the device_id of the closest sensor
+
+    with open("purpleair.json", "r", encoding="utf8") as file:
+        data = file.read()
 
     response_json = json.loads(data)
 
@@ -18,48 +19,55 @@ def get_closest_device_readings(user_coordinate):
     shortest_device_id = None
     shortest_pm_2_5_atm = None
 
-    for sensor in response_json['results']:
+    for sensor in response_json["results"]:
         try:
-            sensor_coordinate = {'lat': sensor['Lat'], 'lng': sensor['Lon']}
+            sensor_coordinate = {"lat": sensor["Lat"], "lng": sensor["Lon"]}
         except KeyError:
             # there's no long/lat on this sensor, pass it
             continue
 
-        distance = great_circle((user_coordinate['lat'],
-            user_coordinate['lng']),
-            (sensor_coordinate['lat'],
-            sensor_coordinate['lng'])).miles
+        distance = great_circle(
+            (user_coordinate["lat"], user_coordinate["lng"]),
+            (sensor_coordinate["lat"], sensor_coordinate["lng"]),
+        ).miles
 
         try:
             if shortest_distance is None or shortest_distance > distance:
                 shortest_distance = distance
-                shortest_device_id = sensor['ID']
-                shortest_pm_2_5_atm = pm_2_5_to_aqi(sensor['PM2_5Value'])
+                shortest_device_id = sensor["ID"]
+                shortest_pm_2_5_atm = pm_2_5_to_aqi(sensor["PM2_5Value"])
 
         except:
-            import pprint, pdb; pdb.set_trace()
+            import pprint, pdb
 
-    print("Shortest device id is {} and distance is {} miles".format(shortest_device_id, shortest_distance))
+            pdb.set_trace()
 
-    return {'device_id': shortest_device_id, 
-        'miles_away': shortest_distance,
-         'aqi': shortest_pm_2_5_atm}
+    print(
+        "Shortest device id is {} and distance is {} miles".format(
+            shortest_device_id, shortest_distance
+        )
+    )
+
+    return {
+        "device_id": shortest_device_id,
+        "miles_away": shortest_distance,
+        "aqi": shortest_pm_2_5_atm,
+    }
 
 
 def get_hardcoded_aqi(device_id):
+    #given a hardcoded device_id, return the device's aqi
 
-    if device_id is None: #default
+    if device_id is None:  # default
         device_id = 66407
 
-    url = 'https://www.purpleair.com/json?show=' + str(device_id)
-
-    #response = requests.get('https://api.github.com/user', auth=('user', 'pass'))
+    url = "https://www.purpleair.com/json?show=" + str(device_id)
 
     retry_strategy = Retry(
         total=5,
         backoff_factor=10,
         status_forcelist=[302, 429, 500, 502, 503, 504],
-        method_whitelist=["HEAD", "GET", "OPTIONS"]
+        method_whitelist=["HEAD", "GET", "OPTIONS"],
     )
 
     adapter = HTTPAdapter(max_retries=retry_strategy)
@@ -83,36 +91,38 @@ def get_hardcoded_aqi(device_id):
     else:
         print("Response is valid json")
 
-    #import pdb; pdb.set_trace()
-
-    # get the pm2_5_atm 
     try:
-        print(response_json['results'])
+        print(response_json["results"])
 
         try:
-            response_json['results'][1]['pm2_5_atm'] == True
+            response_json["results"][1]["pm2_5_atm"] == True
         except KeyError:
-            pm_2_5_atm = response_json['results'][0]['pm2_5_atm']
+            pm_2_5_atm = response_json["results"][0]["pm2_5_atm"]
         else:
-            pm_2_5_atm = mean([
-                float(response_json['results'][0]['pm2_5_atm']),
-                float(response_json['results'][1]['pm2_5_atm'])])
+            #average the results if there are two sensors (some models)
+            pm_2_5_atm = mean(
+                [
+                    float(response_json["results"][0]["pm2_5_atm"]),
+                    float(response_json["results"][1]["pm2_5_atm"]),
+                ]
+            )
 
     except Exception as e:
         print("Problem getting pm_2_5_atm")
         raise
-
-    print(pm_2_5_atm)
     return pm_2_5_to_aqi(pm_2_5_atm)
 
+
 def linear(aqi_high, aqi_low, conc_high, conc_low, concentration):
-    return ((concentration - conc_low) / (conc_high - conc_low)) \
-        * (aqi_high - aqi_low) + aqi_low
+    return ((concentration - conc_low) / (conc_high - conc_low)) * (
+        aqi_high - aqi_low
+    ) + aqi_low
+
 
 def pm_2_5_to_aqi(pm_2_5):
     aqi = 0
     c = (floor(10 * float(pm_2_5))) / 10
-    
+
     if c < 12.1:
         aqi = linear(50, 0, 12, 0, c)
     elif c < 35.5:
@@ -131,5 +141,6 @@ def pm_2_5_to_aqi(pm_2_5):
         aqi = -1
     return round(aqi)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

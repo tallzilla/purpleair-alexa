@@ -22,6 +22,7 @@ import os.path
 import six
 import re
 import typing
+
 if typing.TYPE_CHECKING:
     from typing import Dict, Any, List, AnyStr, Tuple
 if six.PY2:
@@ -29,18 +30,18 @@ if six.PY2:
 else:
     import importlib.util
 
-HTTP_HEADER_DELIMITER = '\r\n'
-HTTP_BODY_DELIMITER = '\r\n\r\n'
-CONTENT_LENGTH = 'Content-Length'
+HTTP_HEADER_DELIMITER = "\r\n"
+HTTP_BODY_DELIMITER = "\r\n\r\n"
+CONTENT_LENGTH = "Content-Length"
 
 
 if six.PY3:
-    HTTP_HEADER_DELIMITER = HTTP_HEADER_DELIMITER.encode('utf-8')
-    HTTP_BODY_DELIMITER = HTTP_BODY_DELIMITER.encode('utf-8')
-    CONTENT_LENGTH = CONTENT_LENGTH.encode('utf-8')
+    HTTP_HEADER_DELIMITER = HTTP_HEADER_DELIMITER.encode("utf-8")
+    HTTP_BODY_DELIMITER = HTTP_BODY_DELIMITER.encode("utf-8")
+    CONTENT_LENGTH = CONTENT_LENGTH.encode("utf-8")
 
 NUMBER_OF_UNACCEPTED_CONN = 0
-CONTENT_LENGTH_REGEX = re.compile("Content-Length: (.*?)\r\n".encode('utf-8'))
+CONTENT_LENGTH_REGEX = re.compile("Content-Length: (.*?)\r\n".encode("utf-8"))
 
 
 def _validate_port(port_number):
@@ -55,13 +56,16 @@ def _validate_port(port_number):
     :return: None
     :raises: ValueError when port is not in legal range [0, 65535]
     """
-    if(port_number < 0 or port_number > 65535):
-        raise ValueError('Port out of legal range: {0}. The port number '
-                         'should be in the range [0, 65535]'
-                         .format(port_number))
-    if(port_number == 0):
-        print('The TCP server will listen on a port that is free. Check logs '
-              'to find out what port number is being used')
+    if port_number < 0 or port_number > 65535:
+        raise ValueError(
+            "Port out of legal range: {0}. The port number "
+            "should be in the range [0, 65535]".format(port_number)
+        )
+    if port_number == 0:
+        print(
+            "The TCP server will listen on a port that is free. Check logs "
+            "to find out what port number is being used"
+        )
     return None
 
 
@@ -107,16 +111,27 @@ def _parse_arguments():
     :rtype: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--portNumber',
-                        help='Port number to listen for incoming '
-                             'skill requests',
-                        default=0, type=int)
-    parser.add_argument('-f', '--skillEntryFile',
-                        help='Location of the skill file where skill builder '
-                             'and handlers are initialized', type=str)
-    parser.add_argument('-l', '--lambdaHandler',
-                        help='Name of the lambda handler function',
-                        default='handler', type=str)
+    parser.add_argument(
+        "-p",
+        "--portNumber",
+        help="Port number to listen for incoming " "skill requests",
+        default=0,
+        type=int,
+    )
+    parser.add_argument(
+        "-f",
+        "--skillEntryFile",
+        help="Location of the skill file where skill builder "
+        "and handlers are initialized",
+        type=str,
+    )
+    parser.add_argument(
+        "-l",
+        "--lambdaHandler",
+        help="Name of the lambda handler function",
+        default="handler",
+        type=str,
+    )
     return parser
 
 
@@ -130,8 +145,8 @@ def _get_request_envelope(data):
     :return: Request body as a dictionary
     :rtype: Dict[str, str]
     """
-    request_body = _combine_received_data(data).decode('utf-8')
-    print('Request envelope: {0}'.format(request_body))
+    request_body = _combine_received_data(data).decode("utf-8")
+    print("Request envelope: {0}".format(request_body))
     return json.loads(request_body)
 
 
@@ -145,10 +160,9 @@ def _setup_socket():
     """
     local_debugger_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     local_debugger_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_address = ('localhost', args.portNumber)
+    server_address = ("localhost", args.portNumber)
     local_debugger_socket.bind(server_address)
-    print('Starting server on: {0}'.format(
-        local_debugger_socket.getsockname()))
+    print("Starting server on: {0}".format(local_debugger_socket.getsockname()))
     return local_debugger_socket
 
 
@@ -161,11 +175,11 @@ def _initialize_skill_invoker():
     :rtype: Object
     """
     if six.PY2:
-        skill_invoker = imp.load_source(
-            args.lambdaHandler, args.skillEntryFile)
+        skill_invoker = imp.load_source(args.lambdaHandler, args.skillEntryFile)
     else:
         spec = importlib.util.spec_from_file_location(
-            args.lambdaHandler, args.skillEntryFile)
+            args.lambdaHandler, args.skillEntryFile
+        )
         skill_invoker = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(skill_invoker)
     return skill_invoker
@@ -181,13 +195,16 @@ def _send_response(response, socket_connection):
     :type socket_connection: socket.socket
     :return: None
     """
-    print('Response envelope: {0}'.format(response))
-    socket_connection.send('HTTP/1.1 200 OK{0}Content-Type: application/json;'
-                           'charset=UTF-8{0}Content-Length: {1}{2}{3}'.format(
-                               HTTP_HEADER_DELIMITER.decode('utf-8'),
-                               len(response),
-                               HTTP_BODY_DELIMITER.decode(
-                                   'utf-8'), response).encode('utf-8'))
+    print("Response envelope: {0}".format(response))
+    socket_connection.send(
+        "HTTP/1.1 200 OK{0}Content-Type: application/json;"
+        "charset=UTF-8{0}Content-Length: {1}{2}{3}".format(
+            HTTP_HEADER_DELIMITER.decode("utf-8"),
+            len(response),
+            HTTP_BODY_DELIMITER.decode("utf-8"),
+            response,
+        ).encode("utf-8")
+    )
 
 
 def _get_content_length_and_body(data, content_length):
@@ -214,11 +231,9 @@ def _get_content_length_and_body(data, content_length):
     """
     received_data = _combine_received_data(data)
     content_length_unidentified = True
-    if (HTTP_BODY_DELIMITER in received_data and
-            CONTENT_LENGTH in received_data):
+    if HTTP_BODY_DELIMITER in received_data and CONTENT_LENGTH in received_data:
         content_length = int(CONTENT_LENGTH_REGEX.findall(received_data)[0])
-        received_data = received_data.split(
-            HTTP_BODY_DELIMITER)[-1:][0]
+        received_data = received_data.split(HTTP_BODY_DELIMITER)[-1:][0]
         content_length_unidentified = False
         data = []
         data.append(received_data)
@@ -235,9 +250,9 @@ def _combine_received_data(combined_data):
     :rtype content_length: AnyStr
     """
     if six.PY2:
-        combined_data = ''.join(combined_data)
+        combined_data = "".join(combined_data)
     else:
-        combined_data = b''.join(combined_data)
+        combined_data = b"".join(combined_data)
     return combined_data
 
 
@@ -253,18 +268,29 @@ def _handle_skill_request(client_address, socket_connection, skill_invoker):
     :type skill_invoker: Object
     :return: None
     """
-    print('Connection from {0}'.format(client_address))
+    print("Connection from {0}".format(client_address))
     content_length_unidentified = True
     content_length = -1
     data = []
-    while (content_length_unidentified or
-           len(_combine_received_data(data)) < content_length):
+    while (
+        content_length_unidentified
+        or len(_combine_received_data(data)) < content_length
+    ):
         data.append(socket_connection.recv(16))
         if content_length_unidentified:
-            content_length, data, content_length_unidentified = (
-                _get_content_length_and_body(data, content_length))
-    _send_response(json.dumps(getattr(skill_invoker, args.lambdaHandler)(
-        _get_request_envelope(data), None)), socket_connection)
+            (
+                content_length,
+                data,
+                content_length_unidentified,
+            ) = _get_content_length_and_body(data, content_length)
+    _send_response(
+        json.dumps(
+            getattr(skill_invoker, args.lambdaHandler)(
+                _get_request_envelope(data), None
+            )
+        ),
+        socket_connection,
+    )
 
 
 def main():
@@ -276,17 +302,16 @@ def main():
         skill_invoker = _initialize_skill_invoker()
 
         while True:
-            print('Waiting for a socket connection')
+            print("Waiting for a socket connection")
             socket_connection, client_address = local_debugger_socket.accept()
             try:
-                _handle_skill_request(client_address,
-                                      socket_connection, skill_invoker)
+                _handle_skill_request(client_address, socket_connection, skill_invoker)
             finally:
                 socket_connection.close()
     finally:
         local_debugger_socket.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = _setup_and_validate_arguments()
     main()

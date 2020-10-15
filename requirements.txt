@@ -6,3 +6,4 @@ python-dotenv
 geopy
 pytest
 python-lambda-local
+black

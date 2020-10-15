@@ -26,3 +26,8 @@ Compress-Archive -Force -Path .env, *.py, *.json, .\env\Lib\site-packages\* -Des
 ```
 pytest -x --pdb -s .\tests\test.py
 ```
+
+3. Lint me
+```
+python -m black .
+```
