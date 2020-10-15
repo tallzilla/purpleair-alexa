@@ -183,7 +183,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
 
         application_id = handler_input.request_envelope.session.application.application_id
-        print application_id
+        print(application_id)
 
         #if application_id in SKILL_IDS['NEAREST_SENSOR']:
         return nearest_air_sensor_handler(handler_input)
