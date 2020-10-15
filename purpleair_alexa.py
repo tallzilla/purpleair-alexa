@@ -169,7 +169,7 @@ def hella_hot_handler(handler_input):
     response_builder = handler_input.response_builder 
 
     response_builder.speak(HELLA_HOT_SPEECH).set_card(
-        SimpleCard("Nearest Air Sensor", HELLA_HOT_SPEECH).set_should_end_session(True)
+        SimpleCard("Nearest Air Sensor", HELLA_HOT_SPEECH)
     )
     return response_builder.response
 
