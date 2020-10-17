@@ -31,3 +31,8 @@ pytest -x --pdb -s .\tests\test.py
 ```
 python -m black .
 ```
+
+4. Get the latest sensor list locally
+```
+curl https://www.purpleair.com/json > purpleair.json
+```

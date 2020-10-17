@@ -1,3 +1,4 @@
+import logging
 import requests
 import json
 from requests.adapters import HTTPAdapter
@@ -9,6 +10,11 @@ from geopy.distance import great_circle
 
 def get_closest_device_readings(user_coordinate):
 # given a lng, lat coordinate, return the device_id of the closest sensor
+
+    #transform user_coordinate
+    lat = user_coordinate["latitude_in_degrees"]
+    lng = user_coordinate["longitude_in_degrees"]
+    user_coordinate = {"lat": lat, "lng": lng}
 
     with open("purpleair.json", "r", encoding="utf8") as file:
         data = file.read()
@@ -38,11 +44,10 @@ def get_closest_device_readings(user_coordinate):
                 shortest_pm_2_5_atm = pm_2_5_to_aqi(sensor["PM2_5Value"])
 
         except:
-            import pprint, pdb
+            logging.error("Something weird about readings returned")
+            logging.error(sensor)
 
-            pdb.set_trace()
-
-    print(
+    logging.info(
         "Shortest device id is {} and distance is {} miles".format(
             shortest_device_id, shortest_distance
         )
@@ -78,22 +83,17 @@ def get_hardcoded_aqi(device_id):
     try:
         response = http.get(url, allow_redirects=False)
     except Exception as e:
-        print("Retry Exception, need to handle")
+        logging.error("Retry Exception on " + url)
         raise
-    else:
-        print("Response received from json/show endpoint.")
 
     try:
         response_json = response.json()
     except Exception as e:
-        print("Response isn't valid json")
+        logging.warning("Response isn't valid json")
+        logging.warning(response_json)
         raise
-    else:
-        print("Response is valid json")
 
     try:
-        print(response_json["results"])
-
         try:
             response_json["results"][1]["pm2_5_atm"] == True
         except KeyError:
@@ -108,7 +108,8 @@ def get_hardcoded_aqi(device_id):
             )
 
     except Exception as e:
-        print("Problem getting pm_2_5_atm")
+        logging.error("Problem getting pm_2_5_atm")
+        logging.error(response_json)
         raise
     return pm_2_5_to_aqi(pm_2_5_atm)
 

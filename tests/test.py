@@ -68,7 +68,7 @@ def test_loc_supported_loc_access(coordinate=test_coordinate):
         print(e)
         assert False
 
-    if response["card"]["title"] == pa.SUCCESS_TITLE:
+    if response["card"]["title"] == pa.SWEET_TITLE:
         assert True
     else:
         assert False
@@ -99,20 +99,27 @@ def test_loc_supported_no_loc_access_address_access():
             "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ.eyJhdWQiOiJodHRwczovL2FwaS5hbWF6b25hbGV4YS5jb20iLCJpc3MiOiJBbGV4YVNraWxsS2l0Iiwic3ViIjoiYW16bjEuYXNrLnNraWxsLmQxYjAxYzc4LTZmYTYtNGMwNy1hZTc5LWIzYWUzNjk2OWI1MCIsImV4cCI6MTYwMjExMDcxMSwiaWF0IjoxNjAyMTEwNDExLCJuYmYiOjE2MDIxMTA0MTEsInByaXZhdGVDbGFpbXMiOnsiY29udGV4dCI6IkFBQUFBQUFBQUFDc1dvalFEMjJ6UWFVbUJ0WUg5OWhrVVFFQUFBQUFBQUF4MzBWT09adTVwY0xsZHRJTE9YSytnWW1SN0VNK0tTRlQyVGlvQXoyd1VuNmlMb3hQaTdMOXpPRFFzazdTazR0SDZuVEJGMllMWm00RGJyZVpMdGFZcDRWb1FBQUNLZDhFaXE0L1htOWtPZ0kvK0tmQTRWQzZkMlNhVnZTWXYxbXJIYXZCS1FGWFpSODBGRnQxNkh5bDBOdEpVdXBpZ2tvaXhybG1RMDBRS1NWVVdRbFJueE9xRjUrWXB5OEdnQTZ1QzFEdXFkTklsTUkvL2FpVDg5S2ZrbEFKN1JmZWdnMzRxa3lkNnQ3ME4zRFN3aEJpSXRaL21idkZ1dVhIOFlZMHRVM1E1aXgyVzlrOEJvbkwxTSs0Q3R3dUtBRXJYaGtKYzRzb1FaOWJMWDJWQjNid05udjZuWW04Q1RxbVFQUFdYL0pkU0tpc0gvYzJmS2tQZHZJRlgxMnRXU2pncmxFMTE2WU5QRmNKZmFOa1NqSVpLaGtiaHJTYStURi9hbUdDWGNhNnFSN3BJSDhNSDBkY1Jld09MQzRleUc1YlRWK2o0eVNKbnBNRytGWDJwQ3VBRFA0MGJJcUY5aDdYdnJSdiIsImNvbnNlbnRUb2tlbiI6IkF0emF8SXdFQklBX25xX2pYdHdBMnlBSk9iaTZqcUxMYmlFcGJHQnNvaTNPNzB5S2hjNUh2UDRZTF90ZFV6dlc1QkRvU0U1OTU0UTFxby03WkJXOHBWbHA4M1o2d0dXWjFpYXA0LXk4dHpVa3dSOUJZVlRJRVo0V09WUmZ3bzNwWHRhdlM1MG54T1Y2QWVUd012TTYwMW9aS0ZMWEdfanhLM0NRVEhaNDg5amdUb0RQdlpkTXJkdmFkdm5yVVh6MXpiUHFwalducHNOOEpPNjVvSVIyWnJwMkYxRGQ2Y3U0U0tBQjljclg1a3JEOVp6Z0ZleXQ5RGVGd3IzU29Tb3BhQWJvZEtJUlFqU1BhR3RJM1l2bGN0WXpBbG1ZdHVTdmhma0MzN1RfQ0EtR1NlZjdXbFBpbkJRIiwiZGV2aWNlSWQiOiJhbXpuMS5hc2suZGV2aWNlLkFIV1pZVE1UTUNNR1hWTkZXQjRPNzJURlBEVFpFVlRSRlZMSkRPRVM3Rkk2M1JHSFdEQ0FQSUFUQUJSQ1VJRzJWRDdIVUNEVVFTSlZRS1dLWURVWVA2MzVVV0VDU0FaRlBUTTVNSUhRRFFUWUI3S1Q3RlZCSzNGVlNJRDZPTVJGU0tPTlk1V1k1TEFUVTVTVFBVMzVFV1NSNkRQRk40S1NYV1ZaUDdRR0ZHWkpKNjNaS0FQNDQiLCJ1c2VySWQiOiJhbXpuMS5hc2suYWNjb3VudC5BRVQ1UVlIM1gyREJMNUxWSkJON04yQldTNUU0T0lURDZIN1IyN0ZSRFdSS0NHNEpOU0NHWkpKWldKUDdCMkpLVFNYTEJHUzdCT05KTk5KRUpFWDJURFU2MldVWFRXN0RTQ0RDWVRCS1pFUEhCUkdPWjI3Q1RaNkhMWFRBQ09LQUVXQ0hCS1BTTjVHQUROQ0RXVFY0NlUzQ1c2VU82U09TNzdLT1paMllHM0FOTlNWNDdFWU9NM1NRUVdZU0I2VVdXTkpBTE02UldJUFlSRlkifX0.QK9mxalr7hwgE_qiSvuLc9V8HKMIaa9uXF2EV3VLHWaSbhHJDvLpYU5SWAyOE6iAhJtjKxrBOcGBlNHReKkSauHpagQkkUruL7-KvboSl67ZvLNuNCBaTa_ePDyePeDygfEmgPFvKsc5muzmdhhxmy5USWMbzF8kTnUlMJSlnGZaaxY41Ifeg2_w3nahyvW6YkG9AtN6h2uZzeFYwTZ0H7uxolKkSEyksKmcyst5XzCh-hSRP9TymjekR7mHlAjcFkpDxEjbwGiWQNRHRPeYcnTd3saD5E47StUhM0zBQ1g8Hc5nGiXV7_GoPeJa_qPx2gJ_cxRb541ITTKcJNUw7g",
         )
 
-        handler_output = pa.handler(event=event, context={})
-        response = handler_output["response"]
+     
+        with open("tests/intent_requests.json", "r", encoding="utf8") as file:
+            intent_requests = loads(file.read()) 
 
-    except Exception as e:
-        print(e)
-        assert False
+        for intent_request in intent_requests:
+            event["request"] = intent_request["request"]
 
-    # un-monkey patch
-    DeviceAddressServiceClient.get_full_address = saved_method
+            handler_output = pa.handler(event=event, context={})
+            response = handler_output["response"]
 
-    if response["card"]["title"] == pa.SUCCESS_TITLE:
-        assert True
-    else:
-        assert False
+        except Exception as e:
+            print(e)
+            assert False
+
+        # un-monkey patch
+        DeviceAddressServiceClient.get_full_address = saved_method
+
+        if response["card"]["title"] == pa.SWEET_TITLE:
+            pass
+        else:
+            assert False
 
 
 def test_loc_supported_no_loc_access_no_address_access():
@@ -164,7 +171,7 @@ def test_loc_unsupported_address_access():
     # un-monkey patch
     DeviceAddressServiceClient.get_full_address = saved_method
 
-    if response["card"]["title"] == pa.SUCCESS_TITLE:
+    if response["card"]["title"] == pa.SWEET_TITLE:
         assert True  # Outcome D: We're good -> Results with address coord
     else:
         assert False

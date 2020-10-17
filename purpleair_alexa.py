@@ -33,14 +33,29 @@ NOTIFY_MISSING_ADDRESS_PERMISSIONS = (
 NOTIFY_MISSING_LOCATION_PERMISSIONS = (
     "Please enable Location permissions in " "the Amazon Alexa app."
 )
+
+SWEET_TITLE = "Your Air Report"
+
+SWEET_CARD = (
+    "I found an air sensor that's {} away. "
+    "The air quality is {}. "
+    "Your AQI is {}."
+)
+SWEET_SPEECH = (
+    "I found an air sensor that's {} away. <break time= '0.25s'/>"
+    "The air quality is {}. <break time= '0.25s'/>"
+    "Your AQI is {}. <break time= '0.25s'/>"
+)
+
 SUCCESS_TITLE = "Your AQI"
 SUCCESS_CARD = (
-    "Your AQI is {} at {}. The nearest PurpleAir device ID is {}. "
-    "I think it's about {}."
+    "Your AQI is {} at {}. "
+    "The nearest PurpleAir device ID is {}. "
+    "I think it's about {} away."
 )
 SUCCESS_SPEECH = (
-    'Your AQI is {} <break time= "0.25s"/> at {}. <break time= "0.25s"/> The nearest PurpleAir device i.d. is {}'
-    "and I think it's about {}."
+    "Your AQI is {} <break time= '0.25s'/> at {}. <break time= '0.25s'/> The nearest PurpleAir device i.d. is {}"
+    "and I think it's about {} away."
 )
 
 HELLA_HOT_SPEECH = (
@@ -57,8 +72,33 @@ SKILL_IDS = {
         "amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50"]
 }
 
-def get_aqi_string(aqi):
-    #returns string representing AQI
+
+def sweet_air_handler(handler_input):
+    """returns a response for nearest air sensor"""
+
+    response, coordinate = get_response_and_coordinate(handler_input)
+
+    if coordinate is None:
+        return response
+    else:
+        request_envelope = handler_input.request_envelope
+        response_builder = handler_input.response_builder
+        return build_sweet_air_response_for_coordinate(response_builder, coordinate)
+
+def sensor_detail_handler(handler_input):
+    """returns a response for nearest air sensor"""
+
+    response, coordinate = get_response_and_coordinate(handler_input)
+
+    if coordinate is None:
+        return response
+    else:
+        request_envelope = handler_input.request_envelope
+        response_builder = handler_input.response_builder
+        return build_response_for_coordinate(response_builder, coordinate)
+
+def get_aqi_index_string(aqi):
+    """returns string representing AQI"""
     if aqi < 51:
         return "Good"
     elif aqi < 101:
@@ -68,42 +108,66 @@ def get_aqi_string(aqi):
     elif aqi < 201:
         return "Unhealthy"
     elif aqi < 301:
-        return "Very Unealthy"
+        return "Very Unhealthy"
     else:
         return "Hazardous"
 
+def humanize_distance(miles_away):
+    """human-readable distance"""
+    if miles_away < 2:
+        distance_string = "{} feet".format(int(5280 * miles_away))
+    else:
+        distance_string = "{} miles".format(int(miles_away))
+    return distance_string
+
+def build_sweet_air_response_for_coordinate(response_builder, coordinate):
+    """returns the 'default' response"""
+    readings = get_aqi.get_closest_device_readings(coordinate)
+    distance = humanize_distance(readings["miles_away"])
+
+    aqi = get_aqi.get_hardcoded_aqi(readings["device_id"])
+
+    card_body = SWEET_CARD.format(
+        distance, get_aqi_index_string(aqi), aqi
+    )
+    speech = SWEET_SPEECH.format(
+        distance, get_aqi_index_string(aqi), aqi
+    )
+    response_builder.speak(speech).set_card(
+        SimpleCard(title=SWEET_TITLE, content=card_body)
+    ).set_should_end_session(True)
+
+    logging.info(response_builder.response)
+    return response_builder.response
+
 def build_response_for_coordinate(response_builder, coordinate):
-    #returns an alexa response given a coordinate
-    lat = coordinate["latitude_in_degrees"]
-    lng = coordinate["longitude_in_degrees"]
-    coordinate = {"lat": lat, "lng": lng}
+    """returns an alexa response given a coordinate"""
+
     readings = get_aqi.get_closest_device_readings(coordinate)
     # convert the device id into a readable string
     device_id_string = " ".join(str(readings["device_id"]))
 
-    # human-readable distance
-    if readings["miles_away"] < 2:
-        distance_string = "{} feet away".format(int(5280 * readings["miles_away"]))
-    else:
-        distance_string = "{} miles away".format(int(readings["miles_away"]))
+    distance_string = humanize_distance(readings["miles_away"])
 
     aqi = get_aqi.get_hardcoded_aqi(readings["device_id"])
 
     card_body = SUCCESS_CARD.format(
-        get_aqi_string(aqi), aqi, readings["device_id"], distance_string
+        get_aqi_index_string(aqi), aqi, readings["device_id"], distance_string
     )
     speech = SUCCESS_SPEECH.format(
-        get_aqi_string(aqi), aqi, readings["device_id"], distance_string
+        get_aqi_index_string(aqi), aqi, readings["device_id"], distance_string
     )
     response_builder.speak(speech).set_card(
         SimpleCard(title=SUCCESS_TITLE, content=card_body)
     ).set_should_end_session(True)
+
+    logging.info(response_builder.response)
     return response_builder.response
 
+def get_response_and_coordinate(handler_input):
+    """returns response_builder, Coordinate (optional)"""
 
-def nearest_air_sensor_handler(handler_input):
-    # returns a reponse for nearest air sensor
-
+    coordinate = None
     request_envelope = handler_input.request_envelope
     response_builder = handler_input.response_builder
     user_permissions = request_envelope.context.system.user.permissions
@@ -139,14 +203,15 @@ def nearest_air_sensor_handler(handler_input):
                 coordinate = request_envelope.context.geolocation["coordinate"]
             except TypeError:
                 coordinate = request_envelope.context.geolocation.coordinate.to_dict()
-            return build_response_for_coordinate(response_builder, coordinate)
+            return response_builder.response, coordinate
+            #return build_response_for_coordinate(response_builder, coordinate)
         else:  # if not and we don't have access to address, we'll have to ask for something
             if not address_access:
                 response_builder.speak(NOTIFY_MISSING_LOCATION_PERMISSIONS)
                 response_builder.set_card(
                     AskForPermissionsConsentCard(permissions=GEOLOCATION_PERMISSIONS)
                 )
-                return response_builder.response
+                return response_builder.response, coordinate
 
     if address_access:  # if we haven't returned somethng and do have address access
         coordinate = get_coordinate_from_address_response(address)
@@ -154,50 +219,17 @@ def nearest_air_sensor_handler(handler_input):
             response_builder.speak(NOTIFY_BAD_ADDRESS).set_card(
                 SimpleCard(title=NOTIFY_BAD_ADDRESS_TITLE, content=NOTIFY_BAD_ADDRESS)
             ).set_should_end_session(True)
-            return response_builder.response
+            return response_builder.response, coordinate
         else:
-            return build_response_for_coordinate(response_builder, coordinate)
+            return response_builder.response, coordinate
     else:  # if we don't have access to anything thus far we'll need address permissions
         response_builder.speak(NOTIFY_MISSING_ADDRESS_PERMISSIONS)
         response_builder.set_card(
             AskForPermissionsConsentCard(permissions=ADDRESS_PERMISSIONS)
         )
-        return response_builder.response
+        return response_builder.response, coordinate
 
-def hella_hot_handler(handler_input):
-    import random
-    temperature = random.randint(-50,150)
-    humidity = random.randint(0,100)
-    aqi = random.randint(0,500)
-    possible_alerts = [{'name':'Heat Advisory'}, {'name':'Flash Floods'}]
-    alert_probability = random.random()
-    alert_threshold = 0.10
-
-    if temperature < 32:
-        temperature_speech = "It's hella freezing."
-    elif temperature < 40:
-        temperature_speech = "It's hella cold."
-    elif temperature < 50:
-        temperature_speech = "It's hella chilly."
-    elif temperature < 60:
-        temperature_speech = "It's hella moderate."
-    elif temperature < 80:
-        temperature_speech = "It's hella warm."
-    elif temperature < 90:
-        temperature_speech = "It's hella hot."
-    elif temperature < 100:
-        temperature_speech = "It's hella burning."
-
-    temperature_speech += "It'll be {} degrees today.".format(temperature)
-
-
-    request_envelope = handler_input.request_envelope
-    response_builder = handler_input.response_builder 
-
-    response_builder.speak(temperature_speech).set_card(
-        SimpleCard("Nearest Air Sensor", temperature_speech)
-    )
-    return response_builder.response
+    return response_builder.response, coordinate
 
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
@@ -207,19 +239,17 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-
         application_id = handler_input.request_envelope.session.application.application_id
-        print(application_id)
 
         if application_id in SKILL_IDS['NEAREST_SENSOR']:
-            return nearest_air_sensor_handler(handler_input)
+            return sweet_air_handler(handler_input)
         elif application_id in SKILL_IDS['HELLA_HOT']:
             return hella_hot_handler(handler_input)
         else:
             raise
 
 
-class AQIIntentHandler(AbstractRequestHandler):
+class SensorDetailHandler(AbstractRequestHandler):
     """Handler for Nearest Air Sensor Intent."""
 
     def can_handle(self, handler_input):
@@ -228,7 +258,7 @@ class AQIIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        return nearest_air_sensor_handler(handler_input)
+        return sensor_detail_handler(handler_input)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -240,7 +270,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speech_text = "This skill will tell you what your nearest AQI is!"
+        speech_text = "You can open this skill for basic information, or ask for detailed sensor information for more!"
 
         handler_input.response_builder.speak(speech_text).ask(speech_text).set_card(
             SimpleCard("Nearest Air Sensor", speech_text)
@@ -315,7 +345,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
 # Register handlers
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(AQIIntentHandler())
+sb.add_request_handler(SensorDetailHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())

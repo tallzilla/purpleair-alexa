@@ -1,3 +1,4 @@
+import logging
 import requests
 import os
 import json
@@ -35,24 +36,20 @@ def get_address(device_id, consent_token):
     try:
         response = http.get(api_uri, headers=api_headers)
     except Exception as e:
-        print("Retry Exception, need to handle")
+        logging.error("Retry Exception on " + api_uri)
         raise
-    else:
-        print("Response received from alexa's address lookup.")
 
     try:
         response_json = response.json()
     except Exception as e:
-        print("Response isn't valid json")
+        logging.error("Response isn't valid json")
+        logging.error(response_json)
         raise
     else:
         return response_json
-        print("Response is valid json")
 
 
 def url_encode_address_response(alexa_address_response):
-
-    print(alexa_address_response)
 
     encoded_address = ""
 
@@ -92,12 +89,11 @@ def url_encode_address_response(alexa_address_response):
 
     return encoded_address
 
-
-
-
-
 def get_coordinate_from_address_response(alexa_address_response):
-# returns a dict containing a lat long coordinate from an alexa address response
+
+    logging.info(alexa_address_response)
+
+    # returns a dict containing a lat long coordinate from an alexa address response
 
     base_uri = "https://maps.googleapis.com"
 
@@ -122,19 +118,18 @@ def get_coordinate_from_address_response(alexa_address_response):
     try:
         response = http.get(api_uri)
     except Exception as e:
-        print("Retry Exception, need to handle")
+        logging.error("Retry Exception, need to handle")
+        logging.error(response)
         return None
-    else:
-        print("Response received from google coordinate lookup.")
 
     try:
         response_json = response.json()
         coordinate_google = response_json["results"][0]["geometry"]["location"]
     except Exception as e:
-        print("Response isn't valid json or the coordinate was somehow invalid.")
+        logging.warning("Response isn't valid json or the coordinate was somehow invalid.")
+        logging.warning(response_json)
         return None
     else:
-        print("Response is valid json")
         return {
             "latitude_in_degrees": coordinate_google["lat"],
             "longitude_in_degrees": coordinate_google["lng"],
