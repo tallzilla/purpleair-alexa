@@ -1,8 +1,8 @@
 #Any env file
 .env
 
-#any json
-*.json
+#any root json
+purpleair.json
 
 # Any archive file
 *.zip
