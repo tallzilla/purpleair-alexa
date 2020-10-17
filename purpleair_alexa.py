@@ -254,7 +254,7 @@ class SensorDetailHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("AQIIntent")(handler_input)
+        return is_intent_name("SensorDetailIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response

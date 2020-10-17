@@ -24,7 +24,7 @@ Compress-Archive -Force -Path .env, *.py, *.json, .\env\Lib\site-packages\* -Des
 ```
 2. Run tests
 ```
-pytest -x --pdb -s .\tests\test.py
+pytest -x --pdb -s --log-cli-level=50 .\tests\test.py
 ```
 
 3. Lint me
