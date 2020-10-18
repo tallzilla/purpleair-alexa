@@ -20,19 +20,6 @@ from ask_sdk_model.permission_status import PermissionStatus
 from ask_sdk_model.services.service_exception import ServiceException
 from ask_sdk_model.canfulfill import CanFulfillIntent, CanFulfillIntentValues
 
-if len(logging.getLogger().handlers) > 0:
-    # The Lambda environment pre-configures a handler logging to stderr. If a handler is already configured,
-    # `.basicConfig` does not execute. Thus we set the level directly.
-    root = logging.getLogger()
-    if root.handlers:
-        for handler in root.handlers:
-            root.removeHandler(handler)
-    logging.basicConfig(format='%(asctime)s %(message)s',level=logging.INFO)
-else:
-    logging.basicConfig(level=logging.INFO)
-
-logging.error("Curtis!!!")
-
 sb = CustomSkillBuilder(api_client=DefaultApiClient())
 
 ERROR_TITLE = "Uh oh"
