@@ -18,6 +18,7 @@ from ask_sdk_model.ui import AskForPermissionsConsentCard
 from ask_sdk_model import Response
 from ask_sdk_model.permission_status import PermissionStatus
 from ask_sdk_model.services.service_exception import ServiceException
+from ask_sdk_model.canfulfill import CanFulfillIntent, CanFulfillIntentValues
 
 sb = CustomSkillBuilder(api_client=DefaultApiClient())
 
@@ -75,7 +76,6 @@ SKILL_IDS = {
 
 def sweet_air_handler(handler_input):
     """returns a response for nearest air sensor"""
-
     response, coordinate = get_response_and_coordinate(handler_input)
 
     if coordinate is None:
@@ -248,6 +248,39 @@ class LaunchRequestHandler(AbstractRequestHandler):
         else:
             raise
 
+class CanFulfillIntentRequestHandler(AbstractRequestHandler):
+    """Handler for CanFulfillIntentRequest."""
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return is_request_type('CanFulfillIntentRequest')(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+
+        logging.info("Here comes some sweet intent requests:")
+        logging.info(handler_input)
+
+        #TODO: check this out
+        #can_fulfill = CanFulfillIntent(CanFulfillIntentValues.YES)
+        #if is_intent_name("ChangePlatformsIntent")(handler_input):
+        can_fulfill = CanFulfillIntent(CanFulfillIntentValues.NO)
+
+        return (
+            handler_input.response_builder
+                         .set_can_fulfill_intent(can_fulfill)
+                         .response
+        )
+
+class AirQualityHandler(AbstractRequestHandler):
+    """Handler for Nearest Air Sensor Intent."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return is_intent_name("AirQualityIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        return sweet_air_handler(handler_input)
 
 class SensorDetailHandler(AbstractRequestHandler):
     """Handler for Nearest Air Sensor Intent."""
@@ -344,8 +377,10 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
 
 # Register handlers
+sb.add_request_handler(CanFulfillIntentRequestHandler())
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(SensorDetailHandler())
+sb.add_request_handler(AirQualityHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())

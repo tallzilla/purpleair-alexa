@@ -8,6 +8,8 @@ from ask_sdk_model.permission_status import PermissionStatus
 from ask_sdk_model.interfaces.geolocation.coordinate import Coordinate
 from random import uniform
 
+intent_response = {'canFulfillIntent': {'canFulfill': 'NO'}}
+
 rb = response_helper.ResponseFactory()
 
 test_coordinate = Coordinate(
@@ -48,7 +50,7 @@ def mp_get_full_address_bad(self, device_id, **kwargs):
 
 
 def evaluate_handler_for_intents(handler, event,
-    context, success_titles=None, permissions=None):
+    context, success_titles=None, permissions=None, intent_response=None):
     #Given an event handler, an event, and context, evaluate for each
     #Intet request available
     with open("tests/intent_requests.json", "r", encoding="utf8") as file:
@@ -63,12 +65,21 @@ def evaluate_handler_for_intents(handler, event,
 
         # TODO: This is a hack and could lead to an error (if a handler
         # returns the wrong successful intent)
-        if success_titles is not None:
-            if response["card"]["title"] not in success_titles:
-                assert False
-        if permissions is not None:
-            if response["card"]["permissions"] not in permissions:
-                assert False
+        try:
+            if intent_response is not None:
+                if response.get('canFulfillIntent') is not None:
+                    if response != intent_response:
+                        assert False
+            else:
+                if success_titles is not None:
+                    if response["card"]["title"] not in success_titles:
+                        assert False
+                if permissions is not None:
+                    if response["card"]["permissions"] not in permissions:
+                        assert False
+        except KeyError:
+            import pdb; pdb.set_trace()
+            raise
 
 def test_loc_supported_loc_access(coordinate=test_coordinate):
     # User has geolocation supported and granted access to that data
@@ -89,7 +100,8 @@ def test_loc_supported_loc_access(coordinate=test_coordinate):
         evaluate_handler_for_intents(pa.handler,
             event=event,
             context={},
-            success_titles=success_titles)
+            success_titles=success_titles,
+            intent_response=intent_response)
 
     except Exception as e:
         print(e)
@@ -127,7 +139,8 @@ def test_loc_supported_no_loc_access_address_access():
         evaluate_handler_for_intents(pa.handler,
             event=event,
             context={},
-            success_titles=success_titles)
+            success_titles=success_titles,
+            intent_response=intent_response)
 
     except Exception as e:
         print(e)
@@ -156,7 +169,8 @@ def test_loc_supported_no_loc_access_no_address_access():
         evaluate_handler_for_intents(pa.handler,
             event=event,
             context={},
-            permissions=[pa.GEOLOCATION_PERMISSIONS])
+            permissions=[pa.GEOLOCATION_PERMISSIONS],
+            intent_response=intent_response)
 
     except Exception as e:
         print(e)
@@ -182,7 +196,8 @@ def test_loc_unsupported_address_access():
         evaluate_handler_for_intents(pa.handler,
             event=event,
             context={},
-            success_titles=success_titles)
+            success_titles=success_titles,
+            intent_response=intent_response)
 
     except Exception as e:
         print(e)
@@ -206,7 +221,8 @@ def test_loc_unsupported_no_address_access():
         evaluate_handler_for_intents(pa.handler,
             event=event,
             context={},
-            permissions=[pa.ADDRESS_PERMISSIONS])
+            permissions=[pa.ADDRESS_PERMISSIONS],
+            intent_response=intent_response)
 
     except Exception as e:
         print(e)
@@ -248,7 +264,8 @@ def test_loc_unsupported_address_access_bad():
         evaluate_handler_for_intents(pa.handler,
             event=event,
             context={},
-            success_titles=success_titles)
+            success_titles=success_titles,
+            intent_response=intent_response)
     
     except Exception as e:
         print(e)

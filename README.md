@@ -36,3 +36,11 @@ python -m black .
 ```
 curl https://www.purpleair.com/json > purpleair.json
 ```
+or on Windows
+```
+curl https://www.purpleair.com/json -OutFile purpleair.json
+```
+5. Get Skill Manifest JSON
+```
+ask smapi get-skill-manifest -s amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50 > skill.json
+```

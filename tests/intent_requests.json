@@ -15,11 +15,42 @@
 	{
 		"request":
 			{
+				"type": "IntentRequest",
+				"requestId": "amzn1.echo-api.request.BLAHBLAHBLAH",
+				"locale": "en-US",
+				"timestamp": "2020-10-17T06:59:48Z",
+				"intent": {
+					"name": "AirQualityIntent",
+					"confirmationStatus": "NONE"
+				}
+			}
+	},	
+	{
+		"request":
+			{
 				"type": "LaunchRequest",
 				"requestId": "amzn1.echo-api.request.BLAHBLAHBLAH",
 				"timestamp": "2020-10-07T22:40:14Z",
 				"locale": "en-US",
 				"shouldLinkResultBeReturned": false
+			}
+	},
+	{
+		"request": 
+			{
+				"type": "CanFulfillIntentRequest",
+			  	"requestId": "amzn1.echo-api.request.BLAHBLAHBLAH",
+			    "intent": {
+			      "name": "AirQualityIntent",
+			      "slots": {
+			        "Sound": {
+			          "name": "Sound",
+			          "value": "crickets"
+			        }
+			      }
+		   		},
+			    "locale": "en-US",
+			    "timestamp": "2020-10-07T22:40:14Z"
 			}
 	}
 ]
