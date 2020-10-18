@@ -7,9 +7,6 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from dotenv import load_dotenv
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
 #grab the environment file (contains juicy secrets like API keys)
 load_dotenv()
 

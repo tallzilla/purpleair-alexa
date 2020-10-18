@@ -7,9 +7,6 @@ from math import floor
 from statistics import mean
 from geopy.distance import great_circle
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
 def get_closest_device_readings(user_coordinate):
 # given a lng, lat coordinate, return the device_id of the closest sensor
 

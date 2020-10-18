@@ -22,9 +22,6 @@ from ask_sdk_model.canfulfill import CanFulfillIntent, CanFulfillIntentValues
 
 sb = CustomSkillBuilder(api_client=DefaultApiClient())
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
 ERROR_TITLE = "Uh oh"
 ERROR = "Looks like something went wrong."
 NOTIFY_TITLE = "Permissions needed"
