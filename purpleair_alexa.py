@@ -20,6 +20,7 @@ from ask_sdk_model.permission_status import PermissionStatus
 from ask_sdk_model.services.service_exception import ServiceException
 from ask_sdk_model.canfulfill import CanFulfillIntent, CanFulfillIntentValues
 
+#TODO: should be in __init__.py
 if len(logging.getLogger().handlers) > 0:
     # The Lambda environment pre-configures a handler logging to stderr. If a handler is already configured,
     # `.basicConfig` does not execute. Thus we set the level directly.
