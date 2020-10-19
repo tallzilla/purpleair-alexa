@@ -79,7 +79,8 @@ GEOLOCATION_PERMISSIONS = ["read::alexa:device:all:geolocation"]
 SKILL_IDS = {
     "HELLA_HOT": ["amzn1.ask.skill.bed75595-ff55-44cb-855f-e25943965996"],
     "NEAREST_SENSOR": ["amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b5",
-        "amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50"]
+        "amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50",
+        "amzn1.ask.skill.96430739-946c-4ce3-b5f9-0f85282d3d90"]
 }
 
 
