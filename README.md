@@ -16,7 +16,10 @@ You'll have to create a .env file in the root directory of the project with the 
 MAPS_API_KEY=<your Google Maps api key>
 ```
 You'll also have to fetch the list of sensors at https://www.purpleair.com/json and save it to purpleair.json in the root directory.
- 
+```
+curl https://www.purpleair.com/json > purpleair.json
+```
+
 ### Some useful local incantations:
 1. Pack everything up for lambda upload (Windows):
 ```
@@ -39,8 +42,4 @@ curl https://www.purpleair.com/json > purpleair.json
 or on Windows
 ```
 curl https://www.purpleair.com/json -OutFile purpleair.json
-```
-5. Get Skill Manifest JSON
-```
-ask smapi get-skill-manifest -s amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50 > skill.json
 ```
