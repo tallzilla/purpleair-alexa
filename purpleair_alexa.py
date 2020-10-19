@@ -191,7 +191,7 @@ def get_response_and_coordinate(handler_input):
             user_permissions.scopes["alexa::devices:all:geolocation:read"].status.value
             == PermissionStatus.GRANTED.value
         )
-    except (AttributeError, ValueError) as e::
+    except (AttributeError, ValueError) as e:
         geolocation_granted = False
 
     # get data necessary for address access
