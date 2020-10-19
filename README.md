@@ -20,7 +20,7 @@ You'll also have to fetch the list of sensors at https://www.purpleair.com/json 
 curl https://www.purpleair.com/json > purpleair.json
 ```
 
-### Some useful local incantations:
+## Useful local incantations:
 1. Pack everything up for lambda upload (Windows):
 ```
 Compress-Archive -Force -Path .env, *.py, *.json, .\env\Lib\site-packages\* -DestinationPath purpleair-alexa.zip
@@ -29,12 +29,10 @@ Compress-Archive -Force -Path .env, *.py, *.json, .\env\Lib\site-packages\* -Des
 ```
 pytest -x --pdb -s --log-cli-level=50 .\tests\test.py
 ```
-
 3. Lint me
 ```
 python -m black .
 ```
-
 4. Get the latest sensor list locally
 ```
 curl https://www.purpleair.com/json > purpleair.json
