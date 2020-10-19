@@ -380,7 +380,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
-        logger.error(exception, exc_info=True)
+        logging.error(exception, exc_info=True)
         handler_input.response_builder.speak(ERROR).set_should_end_session(True)
 
         return handler_input.response_builder.response
