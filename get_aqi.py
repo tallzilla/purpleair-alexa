@@ -20,8 +20,7 @@ def get_closest_device_readings(user_coordinate):
             data = file.read()
 
         response_json = json.loads(data)
-    except: #occasionally the json inbound is malformed, so resort to static backup
-        json.decoder.JSONDecodeError:
+    except json.decoder.JSONDecodeError: #occasionally the json inbound is malformed, so resort to static backup
         with open("purpleair_backup.json", "r", encoding="utf8") as file:
             data = file.read()
 
