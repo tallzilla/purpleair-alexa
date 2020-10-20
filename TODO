@@ -1,6 +1,3 @@
-I've almost got the test cases working.
-
-I am trying to vary the handler that's passed into each test.
-
-I started by modifying the json input, but I also need to associate each input
-with an expected output -- the title card. Maybe it's actually time to check out python enumerations
+Sometimes the downloaded purpleair-json file is wonky... maybe an error?
+In any case, the JSON is malformed. I should keep a backup file in the repo somehow
+That's refreshed less than every hour
