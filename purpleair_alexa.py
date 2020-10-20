@@ -79,7 +79,8 @@ GEOLOCATION_PERMISSIONS = ["read::alexa:device:all:geolocation"]
 SKILL_IDS = {
     "HELLA_HOT": ["amzn1.ask.skill.bed75595-ff55-44cb-855f-e25943965996"],
     "NEAREST_SENSOR": ["amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b5",
-        "amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50"]
+        "amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50",
+        "amzn1.ask.skill.96430739-946c-4ce3-b5f9-0f85282d3d90"]
 }
 
 
@@ -190,7 +191,7 @@ def get_response_and_coordinate(handler_input):
             user_permissions.scopes["alexa::devices:all:geolocation:read"].status.value
             == PermissionStatus.GRANTED.value
         )
-    except KeyError:
+    except (AttributeError, ValueError) as e:
         geolocation_granted = False
 
     # get data necessary for address access
@@ -379,7 +380,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
-        logger.error(exception, exc_info=True)
+        logging.error(exception, exc_info=True)
         handler_input.response_builder.speak(ERROR).set_should_end_session(True)
 
         return handler_input.response_builder.response

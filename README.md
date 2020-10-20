@@ -16,8 +16,11 @@ You'll have to create a .env file in the root directory of the project with the 
 MAPS_API_KEY=<your Google Maps api key>
 ```
 You'll also have to fetch the list of sensors at https://www.purpleair.com/json and save it to purpleair.json in the root directory.
- 
-### Some useful local incantations:
+```
+curl https://www.purpleair.com/json > purpleair.json
+```
+
+## Useful local incantations:
 1. Pack everything up for lambda upload (Windows):
 ```
 Compress-Archive -Force -Path .env, *.py, *.json, .\env\Lib\site-packages\* -DestinationPath purpleair-alexa.zip
@@ -26,12 +29,10 @@ Compress-Archive -Force -Path .env, *.py, *.json, .\env\Lib\site-packages\* -Des
 ```
 pytest -x --pdb -s --log-cli-level=50 .\tests\test.py
 ```
-
 3. Lint me
 ```
 python -m black .
 ```
-
 4. Get the latest sensor list locally
 ```
 curl https://www.purpleair.com/json > purpleair.json
@@ -39,8 +40,4 @@ curl https://www.purpleair.com/json > purpleair.json
 or on Windows
 ```
 curl https://www.purpleair.com/json -OutFile purpleair.json
-```
-5. Get Skill Manifest JSON
-```
-ask smapi get-skill-manifest -s amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50 > skill.json
 ```
