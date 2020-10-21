@@ -28,9 +28,8 @@ if len(logging.getLogger().handlers) > 0:
     if root.handlers:
         for handler in root.handlers:
             root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s %(message)s',level=logging.INFO)
 
-#    logging.basicConfig(format='%(asctime)s %(message)s',level=logging.INFO)
 else:
     logging.basicConfig(level=logging.INFO)
 
@@ -193,7 +192,7 @@ def get_response_and_coordinate(handler_input):
             user_permissions.scopes["alexa::devices:all:geolocation:read"].status.value
             == PermissionStatus.GRANTED.value
         )
-    except (AttributeError, ValueError) as e:
+    except (AttributeError, ValueError, KeyError) as e:
         geolocation_granted = False
 
     # get data necessary for address access

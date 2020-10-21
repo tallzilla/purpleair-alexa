@@ -238,7 +238,7 @@ def test_random_coordinates():
             latitude_in_degrees=uniform(-90, 90),
             longitude_in_degrees=uniform(-180, 180),
         )
-        for x in range(10)
+        for x in range(3)
     )
 
     for coord in coords:
