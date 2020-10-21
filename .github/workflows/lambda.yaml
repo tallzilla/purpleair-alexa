@@ -33,7 +33,7 @@ jobs:
           args: https://www.purpleair.com/json -o purpleair.json
       - name: Test with pytest
         run: |
-          export PYTHONPATH="${PYTHONPATH}:~/site-packages" && pytest ./tests/test.py
+          export PYTHONPATH='${PYTHONPATH}:~/site-packages' && pytest ./tests/test.py
       - name: Build zip
         run: |
           cd site-packages && zip -r ../deployment.zip ../.env ../*.py ../*.json *
