@@ -15,14 +15,10 @@ def get_closest_device_readings(user_coordinate):
     lng = user_coordinate["longitude_in_degrees"]
     user_coordinate = {"lat": lat, "lng": lng}
 
-    try:
-        with open("purpleair.json", "r", encoding="utf8") as file:
-            data = file.read()
+    with open("purpleair.json", "r", encoding="utf8") as file:
+        data = file.read()
 
-        response_json = json.loads(data)
-    except json.decoder.JSONDecodeError: #occasionally the json inbound is malformed, so resort to static backup
-        with open("purpleair_backup.json", "r", encoding="utf8") as file:
-            data = file.read()
+    response_json = json.loads(data)
 
     shortest_distance = None
     shortest_device_id = None

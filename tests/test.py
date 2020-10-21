@@ -66,20 +66,21 @@ def evaluate_handler_for_intents(handler, event,
         # TODO: This is a hack and could lead to an error (if a handler
         # returns the wrong successful intent)
         try:
+            #import pdb; pdb.set_trace()
             if intent_response is not None:
                 if response.get('canFulfillIntent') is not None:
                     if response != intent_response:
                         assert False
-            else:
-                if success_titles is not None:
-                    if response["card"]["title"] not in success_titles:
-                        assert False
-                if permissions is not None:
-                    if response["card"]["permissions"] not in permissions:
-                        assert False
-        except KeyError:
-            import pdb; pdb.set_trace()
-            raise
+
+            if success_titles is not None:
+                if response["card"]["title"] not in success_titles:
+                    assert False
+            if permissions is not None:
+                if response["card"]["permissions"] not in permissions:
+                    assert False
+        except Exception as e:
+            print(e)
+            assert False
 
 def test_loc_supported_loc_access(coordinate=test_coordinate):
     # User has geolocation supported and granted access to that data

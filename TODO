@@ -1,5 +1,1 @@
-Sometimes the downloaded purpleair-json file is wonky... maybe an error?
-In any case, the JSON is malformed. I should keep a backup file in the repo somehow
-That's refreshed less than every hour
-
-Also run tests and fail on deployment if they don't pass
+- Smarter sort of the json file to accomodate faster long/lat searches (right now I do a O(n) scan of purpleair lists)
