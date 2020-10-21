@@ -9,6 +9,7 @@ from ask_sdk_model.interfaces.geolocation.coordinate import Coordinate
 from random import uniform
 
 intent_response = {'canFulfillIntent': {'canFulfill': 'NO'}}
+can_fulfill_intent_request_type = 'CanFulfillIntentRequest'
 
 rb = response_helper.ResponseFactory()
 
@@ -58,6 +59,7 @@ def evaluate_handler_for_intents(handler, event,
 
     for intent_request in intent_requests:
 
+
         event["request"] = intent_request["request"]
 
         handler_output = handler(event=event, context=context)
@@ -66,21 +68,25 @@ def evaluate_handler_for_intents(handler, event,
         # TODO: This is a hack and could lead to an error (if a handler
         # returns the wrong successful intent)
         try:
-            #import pdb; pdb.set_trace()
-            if intent_response is not None:
-                if response.get('canFulfillIntent') is not None:
-                    if response != intent_response:
-                        assert False
 
-            if success_titles is not None:
-                if response["card"]["title"] not in success_titles:
-                    assert False
-            if permissions is not None:
-                if response["card"]["permissions"] not in permissions:
-                    assert False
+
+            # if this is a can_fulfill_intent_request request
+            if intent_request['request']['type'] \
+                == can_fulfill_intent_request_type:
+                    if response.get('canFulfillIntent') is not None:
+                        if response != intent_response:
+                            assert False
+            else:
+                if success_titles is not None:
+                    if response.get("card") is None \
+                        or response["card"]["title"] not in success_titles:
+                        assert False
+                if permissions is not None:
+                    if response["card"]["permissions"] not in permissions:
+                        assert False
         except Exception as e:
             print(e)
-            assert False
+            raise
 
 def test_loc_supported_loc_access(coordinate=test_coordinate):
     # User has geolocation supported and granted access to that data
@@ -106,7 +112,7 @@ def test_loc_supported_loc_access(coordinate=test_coordinate):
 
     except Exception as e:
         print(e)
-        assert False
+        raise
 
     assert True
 
@@ -145,7 +151,8 @@ def test_loc_supported_no_loc_access_address_access():
 
     except Exception as e:
         print(e)
-        assert False
+        raise
+
 
     # un-monkey patch
     DeviceAddressServiceClient.get_full_address = saved_method
@@ -175,7 +182,8 @@ def test_loc_supported_no_loc_access_no_address_access():
 
     except Exception as e:
         print(e)
-        assert False
+        raise
+
 
     assert True
 
@@ -202,7 +210,8 @@ def test_loc_unsupported_address_access():
 
     except Exception as e:
         print(e)
-        assert False
+        raise
+
 
     # un-monkey patch
     DeviceAddressServiceClient.get_full_address = saved_method
@@ -227,7 +236,8 @@ def test_loc_unsupported_no_address_access():
 
     except Exception as e:
         print(e)
-        assert False
+        raise
+
 
     assert True
 
@@ -270,7 +280,8 @@ def test_loc_unsupported_address_access_bad():
     
     except Exception as e:
         print(e)
-        assert False
+        raise
+
 
     # un-monkey patch
     DeviceAddressServiceClient.get_full_address = saved_method
