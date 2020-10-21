@@ -31,7 +31,7 @@ jobs:
         uses: wei/curl@master
         with:
           args: https://www.purpleair.com/json -o purpleair.json
-      -name: Test with pytest
+      - name: Test with pytest
         run: |
           pytest ./tests/test.py
       - name: Build zip
