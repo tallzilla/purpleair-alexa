@@ -3,6 +3,8 @@
 # This is a simple Nearest Air Sensor Alexa Skill, built using
 # the implementation of handler classes approach in skill builder
 
+from os import getenv
+import aws_lambda_logging
 import logging
 import get_aqi
 import requests
@@ -20,16 +22,8 @@ from ask_sdk_model.permission_status import PermissionStatus
 from ask_sdk_model.services.service_exception import ServiceException
 from ask_sdk_model.canfulfill import CanFulfillIntent, CanFulfillIntentValues
 
-#TODO: should be in __init__.py
-if len(logging.getLogger().handlers) > 0:
-    # The Lambda environment pre-configures a handler logging to stderr. If a handler is already configured,
-    # `.basicConfig` does not execute. Thus we set the level directly.
-    root = logging.getLogger()
-    if root.handlers:
-        for handler in root.handlers:
-            root.removeHandler(handler)
-    logging.basicConfig(format='%(asctime)s %(message)s',level=logging.INFO)
-
+if getenv("ENVIRONMENT") in (None, "PROD"):
+    aws_lambda_logging.setup(level='INFO')
 else:
     logging.basicConfig(level=logging.INFO)
 

@@ -7,3 +7,4 @@ geopy
 pytest
 python-lambda-local
 black
+aws_lambda_logging
