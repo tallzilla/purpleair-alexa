@@ -28,7 +28,9 @@ if len(logging.getLogger().handlers) > 0:
     if root.handlers:
         for handler in root.handlers:
             root.removeHandler(handler)
-    logging.basicConfig(format='%(asctime)s %(message)s',level=logging.INFO)
+    logging.basicConfig(level=logging.INFO)
+
+#    logging.basicConfig(format='%(asctime)s %(message)s',level=logging.INFO)
 else:
     logging.basicConfig(level=logging.INFO)
 
