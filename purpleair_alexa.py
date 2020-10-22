@@ -263,7 +263,7 @@ class CanFulfillIntentRequestHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
 
         logging.info("Here comes some sweet intent requests:")
-        logging.info(handler_input)
+        logging.info(handler_input.request_envelope.to_dict())
 
         #TODO: check this out
         #can_fulfill = CanFulfillIntent(CanFulfillIntentValues.YES)
