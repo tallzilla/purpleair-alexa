@@ -32,7 +32,7 @@ jobs:
           PURPLEAIR_WRITE_KEY=${{ secrets.PURPLEAIR_WRITE_KEY }}          
           ' > ./.env 
       - name: wget purpleair
-        uses: wei/wget@v1
+        uses: wei/curl@v1
         with:
           args: -O purpleair.json https://api.purpleair.com/v1/sensors?api_key=${{ secrets.PURPLEAIR_READ_KEY }}&fields=latitude%2Clongitude%2Cpm2.5
       - name: Test with pytest
