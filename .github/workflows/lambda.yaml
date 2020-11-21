@@ -34,7 +34,7 @@ jobs:
       - name: curl purpleair
         uses: wei/curl@master
         with:
-          args: -O purpleair.json https://api.purpleair.com/v1/sensors?api_key${{ secrets.PURPLEAIR_READ_KEY }}&fields=latitude,longitude,pm2.5
+          args: -O purpleair.json https://api.purpleair.com/v1/sensors?api_key=${{ secrets.PURPLEAIR_READ_KEY }}&fields=latitude,longitude,pm2.5
       - name: Test with pytest
         run: |
           export PYTHONPATH='$PYTHONPATH:site-packages' && echo $PYTHONPATH && python -m pytest ./tests/test.py
