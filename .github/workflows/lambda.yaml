@@ -31,10 +31,10 @@ jobs:
           PURPLEAIR_READ_KEY=${{ secrets.PURPLEAIR_READ_KEY }}
           PURPLEAIR_WRITE_KEY=${{ secrets.PURPLEAIR_WRITE_KEY }}          
           ' > ./.env 
-      - name: curl purpleair
-        uses: wei/curl@master
+      - name: wget purpleair
+        uses: wei/wget@v1
         with:
-          args: "'https://api.purpleair.com/v1/sensors?api_key=${{ secrets.PURPLEAIR_READ_KEY }}&fields=latitude,longitude,pm2.5' -O purpleair.json"
+          args: -O purpleair.jsonhttps://api.purpleair.com/v1/sensors?api_key=${{ secrets.PURPLEAIR_READ_KEY }}&fields=latitude,longitude,pm2.5
       - name: Test with pytest
         run: |
           export PYTHONPATH='$PYTHONPATH:site-packages' && echo $PYTHONPATH && python -m pytest ./tests/test.py
