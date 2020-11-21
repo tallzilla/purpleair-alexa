@@ -14,6 +14,8 @@ MAPS_API_KEY=<your key>
 You'll have to create a .env file in the root directory of the project with the format
 ```
 MAPS_API_KEY=<your Google Maps api key>
+PURPLEAIR_READ_KEY=<your PurpleAir read api key>
+PURPLEAIR_WRITE_KEY=<your PurpleAir write api key>
 ```
 You'll also have to fetch the list of sensors at https://www.purpleair.com/json and save it to purpleair.json in the root directory.
 ```

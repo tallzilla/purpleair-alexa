@@ -5,10 +5,11 @@ import json
 from urllib.parse import quote_plus
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from dotenv import load_dotenv
 
+##TODO if tests pass delete
+#from dotenv import load_dotenv
 #grab the environment file (contains juicy secrets like API keys)
-load_dotenv()
+#load_dotenv()
 
 def get_address(device_id, consent_token):
     #get the user's address from an alexa device ID and consent token

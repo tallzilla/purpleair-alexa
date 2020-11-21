@@ -6,6 +6,12 @@ from requests.packages.urllib3.util.retry import Retry
 from math import floor
 from statistics import mean
 from geopy.distance import great_circle
+from os import getenv
+from dotenv import load_dotenv
+
+#grab the environment file (contains juicy secrets like API keys)
+load_dotenv()
+
 
 def get_closest_device_readings(user_coordinate):
 # given a lng, lat coordinate, return the device_id of the closest sensor
@@ -24,23 +30,26 @@ def get_closest_device_readings(user_coordinate):
     shortest_device_id = None
     shortest_pm_2_5_atm = None
 
-    for sensor in response_json["results"]:
-        try:
-            sensor_coordinate = {"lat": sensor["Lat"], "lng": sensor["Lon"]}
-        except KeyError:
-            # there's no long/lat on this sensor, pass it
-            continue
+    for datum in response_json["data"]:
+        sensor_index,sensor_latitude, \
+            sensor_longitude, sensor_pm2_5 = datum
+
+        # try:
+        #     sensor_coordinate = {"lat": sensor["Lat"], "lng": sensor["Lon"]}
+        # except KeyError:
+        #     # there's no long/lat on this sensor, pass it
+        #     continue
 
         distance = great_circle(
             (user_coordinate["lat"], user_coordinate["lng"]),
-            (sensor_coordinate["lat"], sensor_coordinate["lng"]),
+            (sensor_latitude, sensor_longitude),
         ).miles
 
         try:
             if shortest_distance is None or shortest_distance > distance:
                 shortest_distance = distance
-                shortest_device_id = sensor["ID"]
-                shortest_pm_2_5_atm = pm_2_5_to_aqi(sensor["PM2_5Value"])
+                shortest_device_id = sensor_index
+                shortest_pm_2_5_atm = sensor_pm2_5
 
         except:
             logging.error("Something weird about readings returned")
@@ -65,7 +74,7 @@ def get_hardcoded_aqi(device_id):
     if device_id is None:  # default
         device_id = 66407
 
-    url = "https://www.purpleair.com/json?show=" + str(device_id)
+    url = "https://api.purpleair.com/v1/sensors/" + str(device_id)
 
     retry_strategy = Retry(
         total=5,
@@ -78,9 +87,10 @@ def get_hardcoded_aqi(device_id):
     http = requests.Session()
     http.mount("https://", adapter)
     http.mount("http://", adapter)
+    headers = {'X-API-Key': getenv("PURPLEAIR_READ_KEY")}
 
     try:
-        response = http.get(url, allow_redirects=False)
+        response = http.get(url, allow_redirects=False, headers=headers)
     except Exception as e:
         logging.error("Retry Exception on " + url)
         raise
@@ -93,16 +103,20 @@ def get_hardcoded_aqi(device_id):
         raise
 
     try:
+        #import pdb; pdb.set_trace()
+        sensor = response_json["sensor"]
+
+
         try:
-            response_json["results"][1]["pm2_5_atm"] == True
+            sensor["pm2.5_b"] == True
         except KeyError:
-            pm_2_5_atm = response_json["results"][0]["pm2_5_atm"]
+            pm_2_5_atm = sensor["pm2.5_a"]
         else:
             #average the results if there are two sensors (some models)
             pm_2_5_atm = mean(
                 [
-                    float(response_json["results"][0]["pm2_5_atm"]),
-                    float(response_json["results"][1]["pm2_5_atm"]),
+                    float(sensor["pm2.5_a"]),
+                    float(sensor["pm2.5_b"]),
                 ]
             )
 
