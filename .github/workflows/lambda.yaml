@@ -40,7 +40,7 @@ jobs:
           export PYTHONPATH='$PYTHONPATH:site-packages' && echo $PYTHONPATH && python -m pytest ./tests/test.py
       - name: Build zip
         run: |
-          cd site-packages && zip -r ../deployment.zip ../.env ../*.py ../*.json *
+          cd site-packages && zip -r ../deployment.zip ../.env ../*.py ${{ github.workspace }}/purpleair.json *
       - name: Push zip to lambda
         uses: appleboy/lambda-action@master
         with:
