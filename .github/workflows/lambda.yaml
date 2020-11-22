@@ -36,8 +36,6 @@ jobs:
         with:
           args: |
             https://api.purpleair.com/v1/sensors?api_key=${{ secrets.PURPLEAIR_READ_KEY }}\&fields=latitude%2Clongitude%2Cpm2.5 -o purpleair.json 
-      - name: Check file
-        run: cat ${{ github.workspace }}/purpleair.json
       - name: Test with pytest
         run: |
           export PYTHONPATH='$PYTHONPATH:site-packages' && echo $PYTHONPATH && python -m pytest ./tests/test.py
