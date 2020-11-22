@@ -34,7 +34,7 @@ jobs:
       - name: wget purpleair
         uses: wei/curl@v1
         with:
-          args: https://api.purpleair.com/v1/sensors?api_key=${{ secrets.PURPLEAIR_READ_KEY }}&fields=latitude%2Clongitude%2Cpm2.5 -o ${{ github.workspace }}/purpleair.json 
+          args: "https://api.purpleair.com/v1/sensors?api_key=${{ secrets.PURPLEAIR_READ_KEY }}&fields=latitude%2Clongitude%2Cpm2.5" -o ${{ github.workspace }}/purpleair.json 
       - name: Check file
         run: cat ${{ github.workspace }}/purpleair.json
       - name: Test with pytest
