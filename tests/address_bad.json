@@ -5,6 +5,6 @@
 "city": null,
 "state_or_region": null,
 "district_or_county": null,
-"country_code": "US",
-"postal_code": "1111"
+"country_code": null,
+"postal_code": null
 }

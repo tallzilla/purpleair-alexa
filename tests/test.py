@@ -69,7 +69,6 @@ def evaluate_handler_for_intents(handler, event,
         # returns the wrong successful intent)
         try:
 
-
             # if this is a can_fulfill_intent_request request
             if intent_request['request']['type'] \
                 == can_fulfill_intent_request_type:

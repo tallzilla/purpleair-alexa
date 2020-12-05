@@ -59,7 +59,7 @@ SUCCESS_CARD = (
     "I think it's about {} away."
 )
 SUCCESS_SPEECH = (
-    "Your AQI is {} <break time= '0.25s'/> at {}. <break time= '0.25s'/> The nearest PurpleAir device i.d. is {}"
+    "Your AQI is {} <break time= '0.25s'/> at {}. <break time= '0.25s'/> The nearest PurpleAir device i.d. is {} "
     "and I think it's about {} away."
 )
 
