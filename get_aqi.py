@@ -9,14 +9,14 @@ from geopy.distance import great_circle
 from os import getenv
 from dotenv import load_dotenv
 
-#grab the environment file (contains juicy secrets like API keys)
+# grab the environment file (contains juicy secrets like API keys)
 load_dotenv()
 
 
 def get_closest_device_readings(user_coordinate):
-# given a lng, lat coordinate, return the device_id of the closest sensor
+    # given a lng, lat coordinate, return the device_id of the closest sensor
 
-    #transform user_coordinate
+    # transform user_coordinate
     lat = user_coordinate["latitude_in_degrees"]
     lng = user_coordinate["longitude_in_degrees"]
     user_coordinate = {"lat": lat, "lng": lng}
@@ -31,8 +31,7 @@ def get_closest_device_readings(user_coordinate):
     shortest_pm_2_5_atm = None
 
     for datum in response_json["data"]:
-        sensor_index,sensor_latitude, \
-            sensor_longitude, sensor_pm2_5 = datum
+        sensor_index, sensor_latitude, sensor_longitude, sensor_pm2_5 = datum
 
         # try:
         #     sensor_coordinate = {"lat": sensor["Lat"], "lng": sensor["Lon"]}
@@ -69,7 +68,7 @@ def get_closest_device_readings(user_coordinate):
 
 
 def get_hardcoded_aqi(device_id):
-    #given a hardcoded device_id, return the device's aqi
+    # given a hardcoded device_id, return the device's aqi
 
     if device_id is None:  # default
         device_id = 66407
@@ -87,7 +86,7 @@ def get_hardcoded_aqi(device_id):
     http = requests.Session()
     http.mount("https://", adapter)
     http.mount("http://", adapter)
-    headers = {'X-API-Key': getenv("PURPLEAIR_READ_KEY")}
+    headers = {"X-API-Key": getenv("PURPLEAIR_READ_KEY")}
 
     try:
         response = http.get(url, allow_redirects=False, headers=headers)
@@ -103,16 +102,20 @@ def get_hardcoded_aqi(device_id):
         raise
 
     try:
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         sensor = response_json["sensor"]
-
 
         try:
             sensor["pm2.5_b"] == True
         except KeyError:
             pm_2_5_atm = sensor["pm2.5_a"]
         else:
-            #average the results if there are two sensors (some models)
+            # average the results if there are two sensors (some models)
+            logging.warning(
+                "A and B readings are {}, {}".format(
+                    sensor["pm2.5_a"], sensor["pm2.5_b"]
+                )
+            )
             pm_2_5_atm = mean(
                 [
                     float(sensor["pm2.5_a"]),
@@ -137,6 +140,8 @@ def pm_2_5_to_aqi(pm_2_5):
     aqi = 0
     c = (floor(10 * float(pm_2_5))) / 10
 
+    logging.warning("pm_2_5 reading is {}".format(pm_2_5))
+
     if c < 12.1:
         aqi = linear(50, 0, 12, 0, c)
     elif c < 35.5:
@@ -151,6 +156,8 @@ def pm_2_5_to_aqi(pm_2_5):
         aqi = linear(400, 301, 350.4, 250.5, c)
     elif c < 500.5:
         aqi = linear(500, 401, 500.4, 350.5, c)
+    elif c >= 500.5:
+        aqi = 500
     else:
         aqi = -1
     return round(aqi)

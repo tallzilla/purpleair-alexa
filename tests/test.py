@@ -8,8 +8,8 @@ from ask_sdk_model.permission_status import PermissionStatus
 from ask_sdk_model.interfaces.geolocation.coordinate import Coordinate
 from random import uniform
 
-intent_response = {'canFulfillIntent': {'canFulfill': 'NO'}}
-can_fulfill_intent_request_type = 'CanFulfillIntentRequest'
+intent_response = {"canFulfillIntent": {"canFulfill": "NO"}}
+can_fulfill_intent_request_type = "CanFulfillIntentRequest"
 
 rb = response_helper.ResponseFactory()
 
@@ -50,15 +50,15 @@ def mp_get_full_address_bad(self, device_id, **kwargs):
         )
 
 
-def evaluate_handler_for_intents(handler, event,
-    context, success_titles=None, permissions=None, intent_response=None):
-    #Given an event handler, an event, and context, evaluate for each
-    #Intet request available
+def evaluate_handler_for_intents(
+    handler, event, context, success_titles=None, permissions=None, intent_response=None
+):
+    # Given an event handler, an event, and context, evaluate for each
+    # Intet request available
     with open("tests/intent_requests.json", "r", encoding="utf8") as file:
-        intent_requests = loads(file.read()) 
+        intent_requests = loads(file.read())
 
     for intent_request in intent_requests:
-
 
         event["request"] = intent_request["request"]
 
@@ -70,15 +70,16 @@ def evaluate_handler_for_intents(handler, event,
         try:
 
             # if this is a can_fulfill_intent_request request
-            if intent_request['request']['type'] \
-                == can_fulfill_intent_request_type:
-                    if response.get('canFulfillIntent') is not None:
-                        if response != intent_response:
-                            assert False
+            if intent_request["request"]["type"] == can_fulfill_intent_request_type:
+                if response.get("canFulfillIntent") is not None:
+                    if response != intent_response:
+                        assert False
             else:
                 if success_titles is not None:
-                    if response.get("card") is None \
-                        or response["card"]["title"] not in success_titles:
+                    if (
+                        response.get("card") is None
+                        or response["card"]["title"] not in success_titles
+                    ):
                         assert False
                 if permissions is not None:
                     if response["card"]["permissions"] not in permissions:
@@ -86,6 +87,7 @@ def evaluate_handler_for_intents(handler, event,
         except Exception as e:
             print(e)
             raise
+
 
 def test_loc_supported_loc_access(coordinate=test_coordinate):
     # User has geolocation supported and granted access to that data
@@ -103,11 +105,13 @@ def test_loc_supported_loc_access(coordinate=test_coordinate):
         event["context"]["geolocation"] = {"coordinate": coordinate.to_dict()}
 
         success_titles = [pa.SWEET_TITLE, pa.SUCCESS_TITLE]
-        evaluate_handler_for_intents(pa.handler,
+        evaluate_handler_for_intents(
+            pa.handler,
             event=event,
             context={},
             success_titles=success_titles,
-            intent_response=intent_response)
+            intent_response=intent_response,
+        )
 
     except Exception as e:
         print(e)
@@ -142,16 +146,17 @@ def test_loc_supported_no_loc_access_address_access():
         )
 
         success_titles = [pa.SWEET_TITLE, pa.SUCCESS_TITLE]
-        evaluate_handler_for_intents(pa.handler,
+        evaluate_handler_for_intents(
+            pa.handler,
             event=event,
             context={},
             success_titles=success_titles,
-            intent_response=intent_response)
+            intent_response=intent_response,
+        )
 
     except Exception as e:
         print(e)
         raise
-
 
     # un-monkey patch
     DeviceAddressServiceClient.get_full_address = saved_method
@@ -173,19 +178,19 @@ def test_loc_supported_no_loc_access_no_address_access():
             }
         }
 
-        evaluate_handler_for_intents(pa.handler,
+        evaluate_handler_for_intents(
+            pa.handler,
             event=event,
             context={},
             permissions=[pa.GEOLOCATION_PERMISSIONS],
-            intent_response=intent_response)
+            intent_response=intent_response,
+        )
 
     except Exception as e:
         print(e)
         raise
 
-
     assert True
-
 
 
 def test_loc_unsupported_address_access():
@@ -199,18 +204,19 @@ def test_loc_unsupported_address_access():
 
         event_permissions = event["context"]["System"]["user"]["permissions"]
         event["context"]["geolocation"] = None  # loc unsupported
-    
+
         success_titles = [pa.SWEET_TITLE, pa.SUCCESS_TITLE]
-        evaluate_handler_for_intents(pa.handler,
+        evaluate_handler_for_intents(
+            pa.handler,
             event=event,
             context={},
             success_titles=success_titles,
-            intent_response=intent_response)
+            intent_response=intent_response,
+        )
 
     except Exception as e:
         print(e)
         raise
-
 
     # un-monkey patch
     DeviceAddressServiceClient.get_full_address = saved_method
@@ -227,16 +233,17 @@ def test_loc_unsupported_no_address_access():
         event_permissions = event["context"]["System"]["user"]["permissions"]
         event["context"]["geolocation"] = None
 
-        evaluate_handler_for_intents(pa.handler,
+        evaluate_handler_for_intents(
+            pa.handler,
             event=event,
             context={},
             permissions=[pa.ADDRESS_PERMISSIONS],
-            intent_response=intent_response)
+            intent_response=intent_response,
+        )
 
     except Exception as e:
         print(e)
         raise
-
 
     assert True
 
@@ -256,6 +263,7 @@ def test_random_coordinates():
 
     assert True
 
+
 def test_loc_unsupported_address_access_bad():
     # we have no geolocation access, and the address input is bad somehow
 
@@ -271,16 +279,17 @@ def test_loc_unsupported_address_access_bad():
         event["context"]["geolocation"] = None  # loc unsupported
 
         success_titles = [pa.NOTIFY_BAD_ADDRESS_TITLE]
-        evaluate_handler_for_intents(pa.handler,
+        evaluate_handler_for_intents(
+            pa.handler,
             event=event,
             context={},
             success_titles=success_titles,
-            intent_response=intent_response)
-    
+            intent_response=intent_response,
+        )
+
     except Exception as e:
         print(e)
         raise
-
 
     # un-monkey patch
     DeviceAddressServiceClient.get_full_address = saved_method

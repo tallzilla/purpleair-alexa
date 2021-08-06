@@ -7,12 +7,13 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 ##TODO if tests pass delete
-#from dotenv import load_dotenv
-#grab the environment file (contains juicy secrets like API keys)
-#load_dotenv()
+# from dotenv import load_dotenv
+# grab the environment file (contains juicy secrets like API keys)
+# load_dotenv()
+
 
 def get_address(device_id, consent_token):
-    #get the user's address from an alexa device ID and consent token
+    # get the user's address from an alexa device ID and consent token
 
     base_uri = "https://api.amazonalexa.com"
 
@@ -90,6 +91,7 @@ def url_encode_address_response(alexa_address_response):
 
     return encoded_address
 
+
 def get_coordinate_from_address_response(alexa_address_response):
 
     logging.info(alexa_address_response)
@@ -127,7 +129,9 @@ def get_coordinate_from_address_response(alexa_address_response):
         response_json = response.json()
         coordinate_google = response_json["results"][0]["geometry"]["location"]
     except Exception as e:
-        logging.warning("Response isn't valid json or the coordinate was somehow invalid.")
+        logging.warning(
+            "Response isn't valid json or the coordinate was somehow invalid."
+        )
         logging.warning(response_json)
         return None
     else:

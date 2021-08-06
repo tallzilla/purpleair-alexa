@@ -23,7 +23,7 @@ from ask_sdk_model.services.service_exception import ServiceException
 from ask_sdk_model.canfulfill import CanFulfillIntent, CanFulfillIntentValues
 
 if getenv("ENVIRONMENT") in (None, "PROD"):
-    aws_lambda_logging.setup(level='INFO')
+    aws_lambda_logging.setup(level="INFO")
 else:
     logging.basicConfig(level=logging.INFO)
 
@@ -42,9 +42,7 @@ NOTIFY_MISSING_LOCATION_PERMISSIONS = (
 SWEET_TITLE = "Your Air Report"
 
 SWEET_CARD = (
-    "I found an air sensor that's {} away. "
-    "The air quality is {}. "
-    "Your AQI is {}."
+    "I found an air sensor that's {} away. " "The air quality is {}. " "Your AQI is {}."
 )
 SWEET_SPEECH = (
     "I found an air sensor that's {} away. <break time= '0.25s'/>"
@@ -63,8 +61,7 @@ SUCCESS_SPEECH = (
     "and I think it's about {} away."
 )
 
-HELLA_HOT_SPEECH = (
-    "Hi! It's hella hot.")
+HELLA_HOT_SPEECH = "Hi! It's hella hot."
 
 NOTIFY_BAD_ADDRESS_TITLE = "Unsupported Address"
 NOTIFY_BAD_ADDRESS = "Sorry, this skill is having trouble supporting your address."
@@ -73,9 +70,11 @@ GEOLOCATION_PERMISSIONS = ["read::alexa:device:all:geolocation"]
 
 SKILL_IDS = {
     "HELLA_HOT": ["amzn1.ask.skill.bed75595-ff55-44cb-855f-e25943965996"],
-    "NEAREST_SENSOR": ["amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b5",
+    "NEAREST_SENSOR": [
+        "amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b5",
         "amzn1.ask.skill.d1b01c78-6fa6-4c07-ae79-b3ae36969b50",
-        "amzn1.ask.skill.96430739-946c-4ce3-b5f9-0f85282d3d90"]
+        "amzn1.ask.skill.96430739-946c-4ce3-b5f9-0f85282d3d90",
+    ],
 }
 
 
@@ -90,6 +89,7 @@ def sweet_air_handler(handler_input):
         response_builder = handler_input.response_builder
         return build_sweet_air_response_for_coordinate(response_builder, coordinate)
 
+
 def sensor_detail_handler(handler_input):
     """returns a response for nearest air sensor"""
 
@@ -101,6 +101,7 @@ def sensor_detail_handler(handler_input):
         request_envelope = handler_input.request_envelope
         response_builder = handler_input.response_builder
         return build_response_for_coordinate(response_builder, coordinate)
+
 
 def get_aqi_index_string(aqi):
     """returns string representing AQI"""
@@ -117,6 +118,7 @@ def get_aqi_index_string(aqi):
     else:
         return "Hazardous"
 
+
 def humanize_distance(miles_away):
     """human-readable distance"""
     if miles_away < 2:
@@ -125,6 +127,7 @@ def humanize_distance(miles_away):
         distance_string = "{} miles".format(int(miles_away))
     return distance_string
 
+
 def build_sweet_air_response_for_coordinate(response_builder, coordinate):
     """returns the 'default' response"""
     readings = get_aqi.get_closest_device_readings(coordinate)
@@ -132,18 +135,15 @@ def build_sweet_air_response_for_coordinate(response_builder, coordinate):
 
     aqi = get_aqi.get_hardcoded_aqi(readings["device_id"])
 
-    card_body = SWEET_CARD.format(
-        distance, get_aqi_index_string(aqi), aqi
-    )
-    speech = SWEET_SPEECH.format(
-        distance, get_aqi_index_string(aqi), aqi
-    )
+    card_body = SWEET_CARD.format(distance, get_aqi_index_string(aqi), aqi)
+    speech = SWEET_SPEECH.format(distance, get_aqi_index_string(aqi), aqi)
     response_builder.speak(speech).set_card(
         SimpleCard(title=SWEET_TITLE, content=card_body)
     ).set_should_end_session(True)
 
     logging.info(response_builder.response)
     return response_builder.response
+
 
 def build_response_for_coordinate(response_builder, coordinate):
     """returns an alexa response given a coordinate"""
@@ -168,6 +168,7 @@ def build_response_for_coordinate(response_builder, coordinate):
 
     logging.info(response_builder.response)
     return response_builder.response
+
 
 def get_response_and_coordinate(handler_input):
     """returns response_builder, Coordinate (optional)"""
@@ -209,7 +210,7 @@ def get_response_and_coordinate(handler_input):
             except TypeError:
                 coordinate = request_envelope.context.geolocation.coordinate.to_dict()
             return response_builder.response, coordinate
-            #return build_response_for_coordinate(response_builder, coordinate)
+            # return build_response_for_coordinate(response_builder, coordinate)
         else:  # if not and we don't have access to address, we'll have to ask for something
             if not address_access:
                 response_builder.speak(NOTIFY_MISSING_LOCATION_PERMISSIONS)
@@ -236,6 +237,7 @@ def get_response_and_coordinate(handler_input):
 
     return response_builder.response, coordinate
 
+
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
 
@@ -244,20 +246,24 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-        application_id = handler_input.request_envelope.session.application.application_id
+        application_id = (
+            handler_input.request_envelope.session.application.application_id
+        )
 
-        if application_id in SKILL_IDS['NEAREST_SENSOR']:
+        if application_id in SKILL_IDS["NEAREST_SENSOR"]:
             return sweet_air_handler(handler_input)
-        elif application_id in SKILL_IDS['HELLA_HOT']:
+        elif application_id in SKILL_IDS["HELLA_HOT"]:
             return hella_hot_handler(handler_input)
         else:
             raise
 
+
 class CanFulfillIntentRequestHandler(AbstractRequestHandler):
     """Handler for CanFulfillIntentRequest."""
+
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_request_type('CanFulfillIntentRequest')(handler_input)
+        return is_request_type("CanFulfillIntentRequest")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -265,16 +271,15 @@ class CanFulfillIntentRequestHandler(AbstractRequestHandler):
         logging.info("Here comes some sweet intent requests:")
         logging.info(handler_input.request_envelope.to_dict())
 
-        #TODO: check this out
-        #can_fulfill = CanFulfillIntent(CanFulfillIntentValues.YES)
-        #if is_intent_name("ChangePlatformsIntent")(handler_input):
+        # TODO: check this out
+        # can_fulfill = CanFulfillIntent(CanFulfillIntentValues.YES)
+        # if is_intent_name("ChangePlatformsIntent")(handler_input):
         can_fulfill = CanFulfillIntent(CanFulfillIntentValues.NO)
 
-        return (
-            handler_input.response_builder
-                         .set_can_fulfill_intent(can_fulfill)
-                         .response
-        )
+        return handler_input.response_builder.set_can_fulfill_intent(
+            can_fulfill
+        ).response
+
 
 class AirQualityHandler(AbstractRequestHandler):
     """Handler for Nearest Air Sensor Intent."""
@@ -286,6 +291,7 @@ class AirQualityHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         return sweet_air_handler(handler_input)
+
 
 class SensorDetailHandler(AbstractRequestHandler):
     """Handler for Nearest Air Sensor Intent."""
