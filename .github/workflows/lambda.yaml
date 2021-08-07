@@ -43,7 +43,7 @@ jobs:
         run: |
           cd site-packages && zip -r ../deployment.zip ../.env ../*.py ../*.json *
       - name: Push zip to lambda
-        uses: appleboy/lambda-action@master@v0.1.3
+        uses: appleboy/lambda-action@v0.1.3
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
