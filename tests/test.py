@@ -252,8 +252,8 @@ def test_random_coordinates():
     # test a few random places in the world for kicks
     coords = (
         Coordinate(
-            latitude_in_degrees=uniform(-90, 90),
-            longitude_in_degrees=uniform(-180, 180),
+            latitude_in_degrees=uniform(-90.0, 90.0),
+            longitude_in_degrees=uniform(-180.0, 180.0),
         )
         for x in range(3)
     )

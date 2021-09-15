@@ -33,12 +33,6 @@ def get_closest_device_readings(user_coordinate):
     for datum in response_json["data"]:
         sensor_index, sensor_latitude, sensor_longitude, sensor_pm2_5 = datum
 
-        # try:
-        #     sensor_coordinate = {"lat": sensor["Lat"], "lng": sensor["Lon"]}
-        # except KeyError:
-        #     # there's no long/lat on this sensor, pass it
-        #     continue
-
         distance = great_circle(
             (user_coordinate["lat"], user_coordinate["lng"]),
             (sensor_latitude, sensor_longitude),
