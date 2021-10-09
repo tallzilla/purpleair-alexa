@@ -1,1 +1,2 @@
 - Smarter sort of the json file to accomodate faster long/lat searches (right now I do a O(n) scan of purpleair lists)
+- Check if the sensors of the returned purpleair reader are working or consistent, and pass that info to the user

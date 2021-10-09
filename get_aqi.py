@@ -100,10 +100,13 @@ def get_hardcoded_aqi(device_id):
         logging.warning("Response isn't valid json")
         logging.warning(response_json)
         raise
-
     try:
-        # import pdb; pdb.set_trace()
         sensor = response_json["sensor"]
+        try:
+            sensor["pm2.5_a"] == True
+        except KeyError:
+            logging.warning("Sensor doesn't have a pm2.5 meter")
+            raise
 
         try:
             sensor["pm2.5_b"] == True
