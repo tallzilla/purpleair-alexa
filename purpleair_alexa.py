@@ -78,7 +78,7 @@ SKILL_IDS = {
 }
 
 
-def sweet_air_handler(handler_input):
+def sweet_air_handler(handler_input, interior=False):
     """returns a response for nearest air sensor"""
     response, coordinate = get_response_and_coordinate(handler_input)
 
@@ -87,7 +87,7 @@ def sweet_air_handler(handler_input):
     else:
         request_envelope = handler_input.request_envelope
         response_builder = handler_input.response_builder
-        return build_sweet_air_response_for_coordinate(response_builder, coordinate)
+        return build_default_response_for_coordinate(response_builder, coordinate, interior)
 
 
 def sensor_detail_handler(handler_input):
@@ -100,7 +100,7 @@ def sensor_detail_handler(handler_input):
     else:
         request_envelope = handler_input.request_envelope
         response_builder = handler_input.response_builder
-        return build_response_for_coordinate(response_builder, coordinate)
+        return build_detailed_response_for_coordinate(response_builder, coordinate)
 
 
 def get_aqi_index_string(aqi):
@@ -128,9 +128,9 @@ def humanize_distance(miles_away):
     return distance_string
 
 
-def build_sweet_air_response_for_coordinate(response_builder, coordinate):
+def build_default_response_for_coordinate(response_builder, coordinate, interior=False):
     """returns the 'default' response"""
-    readings = get_aqi.get_closest_device_readings(coordinate)
+    readings = get_aqi.get_closest_device_readings(coordinate, interior)
     distance = humanize_distance(readings["miles_away"])
 
     aqi = get_aqi.get_hardcoded_aqi(readings["device_id"])
@@ -145,11 +145,10 @@ def build_sweet_air_response_for_coordinate(response_builder, coordinate):
     return response_builder.response
 
 
-def build_response_for_coordinate(response_builder, coordinate):
+def build_detailed_response_for_coordinate(response_builder, coordinate):
     """returns an alexa response given a coordinate"""
 
     readings = get_aqi.get_closest_device_readings(coordinate)
-    # convert the device id into a readable string
     device_id_string = " ".join(str(readings["device_id"]))
 
     distance_string = humanize_distance(readings["miles_away"])
@@ -210,7 +209,7 @@ def get_response_and_coordinate(handler_input):
             except TypeError:
                 coordinate = request_envelope.context.geolocation.coordinate.to_dict()
             return response_builder.response, coordinate
-            # return build_response_for_coordinate(response_builder, coordinate)
+            # return build_detailed_response_for_coordinate(response_builder, coordinate)
         else:  # if not and we don't have access to address, we'll have to ask for something
             if not address_access:
                 response_builder.speak(NOTIFY_MISSING_LOCATION_PERMISSIONS)
@@ -304,6 +303,17 @@ class SensorDetailHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         return sensor_detail_handler(handler_input)
 
+class InteriorIntentHandler(AbstractRequestHandler):
+    """Handler for Interior Intent."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return is_intent_name("InteriorIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        return sweet_air_handler(handler_input, interior=True)
+
 
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
@@ -396,5 +406,6 @@ sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
+sb.add_request_handler(InteriorIntentHandler())
 sb.add_exception_handler(CatchAllExceptionHandler())
 handler = sb.lambda_handler()

@@ -54,7 +54,7 @@ def evaluate_handler_for_intents(
     handler, event, context, success_titles=None, permissions=None, intent_response=None
 ):
     # Given an event handler, an event, and context, evaluate for each
-    # Intet request available
+    # Intent request available
     with open("tests/intent_requests.json", "r", encoding="utf8") as file:
         intent_requests = loads(file.read())
 
