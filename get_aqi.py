@@ -33,6 +33,10 @@ def get_closest_device_readings(user_coordinate):
     for datum in response_json["data"]:
         sensor_index, sensor_latitude, sensor_longitude, sensor_pm2_5 = datum
 
+        #skip any sensor with a null sensor reading
+        if sensor_pm2_5 is None:
+            continue
+
         distance = great_circle(
             (user_coordinate["lat"], user_coordinate["lng"]),
             (sensor_latitude, sensor_longitude),
@@ -94,7 +98,7 @@ def get_hardcoded_aqi(device_id):
         logging.warning("Response isn't valid json")
         logging.warning(response_json)
         raise
-        
+
     try:
         sensor = response_json["sensor"]
 
