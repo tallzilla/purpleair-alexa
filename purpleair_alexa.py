@@ -42,10 +42,10 @@ NOTIFY_MISSING_LOCATION_PERMISSIONS = (
 SWEET_TITLE = "Your Air Report"
 
 SWEET_CARD = (
-    "I found an air sensor that's {} away. " "The air quality is {}. " "Your AQI is {}."
+    "I found an {}air sensor that's {} away. " "The air quality is {}. " "Your AQI is {}."
 )
 SWEET_SPEECH = (
-    "I found an air sensor that's {} away. <break time= '0.25s'/>"
+    "I found an {}air sensor that's {} away. <break time= '0.25s'/>"
     "The air quality is {}. <break time= '0.25s'/>"
     "Your AQI is {}. <break time= '0.25s'/>"
 )
@@ -78,7 +78,7 @@ SKILL_IDS = {
 }
 
 
-def sweet_air_handler(handler_input, interior=False):
+def sweet_air_handler(handler_input, indoor=False):
     """returns a response for nearest air sensor"""
     response, coordinate = get_response_and_coordinate(handler_input)
 
@@ -87,7 +87,7 @@ def sweet_air_handler(handler_input, interior=False):
     else:
         request_envelope = handler_input.request_envelope
         response_builder = handler_input.response_builder
-        return build_default_response_for_coordinate(response_builder, coordinate, interior)
+        return build_default_response_for_coordinate(response_builder, coordinate, indoor)
 
 
 def sensor_detail_handler(handler_input):
@@ -128,15 +128,17 @@ def humanize_distance(miles_away):
     return distance_string
 
 
-def build_default_response_for_coordinate(response_builder, coordinate, interior=False):
+def build_default_response_for_coordinate(response_builder, coordinate, indoor=False):
     """returns the 'default' response"""
-    readings = get_aqi.get_closest_device_readings(coordinate, interior)
+    readings = get_aqi.get_closest_device_readings(coordinate, indoor)
     distance = humanize_distance(readings["miles_away"])
 
     aqi = get_aqi.get_hardcoded_aqi(readings["device_id"])
 
-    card_body = SWEET_CARD.format(distance, get_aqi_index_string(aqi), aqi)
-    speech = SWEET_SPEECH.format(distance, get_aqi_index_string(aqi), aqi)
+    indoor_string = "indoor " if indoor else ""
+
+    card_body = SWEET_CARD.format(indoor_string, distance, get_aqi_index_string(aqi), aqi)
+    speech = SWEET_SPEECH.format(indoor_string, distance, get_aqi_index_string(aqi), aqi)
     response_builder.speak(speech).set_card(
         SimpleCard(title=SWEET_TITLE, content=card_body)
     ).set_should_end_session(True)
@@ -303,16 +305,16 @@ class SensorDetailHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         return sensor_detail_handler(handler_input)
 
-class InteriorIntentHandler(AbstractRequestHandler):
-    """Handler for Interior Intent."""
+class IndoorIntentHandler(AbstractRequestHandler):
+    """Handler for indoor Intent."""
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("InteriorIntent")(handler_input)
+        return is_intent_name("IndoorIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        return sweet_air_handler(handler_input, interior=True)
+        return sweet_air_handler(handler_input, indoor=True)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -406,6 +408,6 @@ sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
-sb.add_request_handler(InteriorIntentHandler())
+sb.add_request_handler(IndoorIntentHandler())
 sb.add_exception_handler(CatchAllExceptionHandler())
 handler = sb.lambda_handler()

@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_closest_device_readings(user_coordinate, interior=False):
+def get_closest_device_readings(user_coordinate, indoor=False):
     # given a lng, lat coordinate, return the device_id of the closest sensor
 
     # transform user_coordinate
@@ -21,8 +21,8 @@ def get_closest_device_readings(user_coordinate, interior=False):
     lng = user_coordinate["longitude_in_degrees"]
     user_coordinate = {"lat": lat, "lng": lng}
 
-    #transform interior to PA's private designation
-    user_location_type = 1 if interior else 0
+    #transform indoor to PA's private designation
+    user_location_type = 1 if indoor else 0
 
     with open("purpleair.json", "r", encoding="utf8") as file:
         data = file.read()

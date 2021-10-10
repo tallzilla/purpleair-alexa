@@ -7,7 +7,7 @@
                 "locale": "en-US",
                 "timestamp": "2020-10-17T06:59:48Z",
                 "intent": {
-                    "name": "InteriorIntent",
+                    "name": "IndoorIntent",
                     "confirmationStatus": "NONE"
                 }
             }
