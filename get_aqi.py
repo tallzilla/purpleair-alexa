@@ -31,7 +31,9 @@ def get_closest_device_readings(user_coordinate):
     shortest_pm_2_5_atm = None
 
     for datum in response_json["data"]:
-        sensor_index, sensor_latitude, sensor_longitude, sensor_pm2_5 = datum
+        sensor_index, sensor_latitude, sensor_longitude, \
+            sensor_pm2_5, sensor_location_type, sensor_private, \
+            sensor_confidence = datum
 
         #skip any sensor with a null sensor reading
         if sensor_pm2_5 is None:

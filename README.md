@@ -40,9 +40,9 @@ python -m pytest -x --pdb -s --log-cli-level=50 .\tests\test.py
 ```
 5. Get the latest sensor list locally
 ```
-curl https://api.purpleair.com/v1/sensors?api_key=YOUR_PURPLEAIR_READ_KEY_HERE"&"fields=latitude%2Clongitude%2Cpm2.5 > purpleair.json
+curl https://api.purpleair.com/v1/sensors?api_key=YOUR_PURPLEAIR_READ_KEY_HERE"&"fields=latitude%2Clongitude%2Cpm2.5%2Clocation_type%2Cprivate%2Cconfidence > purpleair.json
 ```
 or on Windows
 ```
-curl https://api.purpleair.com/v1/sensors?api_key=YOUR_PURPLEAIR_READ_KEY_HERE"&"fields=latitude%2Clongitude%2Cpm2.5 -OutFile purpleair.json
+curl https://api.purpleair.com/v1/sensors?api_key=YOUR_PURPLEAIR_READ_KEY_HERE"&"fields=latitude%2Clongitude%2Cpm2.5%2Clocation_type%2Cprivate%2Cconfidence -OutFile purpleair.json
 ```
